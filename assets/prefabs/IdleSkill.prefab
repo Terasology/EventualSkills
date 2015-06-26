@@ -1,0 +1,7 @@
+{
+  "EventualSkillDescription": {
+    "name": "Idle",
+    "description": "Increases laziness by 20% per level.",
+    "prerequisiteSkills": []
+  }
+}

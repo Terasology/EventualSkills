@@ -1,0 +1,8 @@
+{
+    "id" : "EventualSkills",
+    "version" : "0.1.0",
+    "author" : "Josharias",
+    "displayName" : "Eventual Skills",
+    "description" : "A library for adding time based skill leveling.",
+    "dependencies" : []
+}
