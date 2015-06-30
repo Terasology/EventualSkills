@@ -15,7 +15,6 @@
  */
 package org.terasology.eventualSkills.systems;
 
-import com.google.api.client.util.Lists;
 import com.google.api.client.util.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +38,7 @@ import org.terasology.network.ClientComponent;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -55,10 +55,10 @@ public class EventualSkillsCommonSystem extends BaseComponentSystem implements E
     Time time;
 
     @Override
-    public Iterable<EventualSkillDescriptionComponent> listSkills() {
-        List<EventualSkillDescriptionComponent> items = Lists.newArrayList();
+    public Iterable<ResourceUrn> listSkills() {
+        List<ResourceUrn> items = new ArrayList<>();
         for (Prefab skillPrefab : prefabManager.listPrefabs(EventualSkillDescriptionComponent.class)) {
-            items.add(skillPrefab.getComponent(EventualSkillDescriptionComponent.class));
+            items.add(skillPrefab.getUrn());
         }
         return items;
     }

@@ -34,7 +34,15 @@ public class EntityEventualSkillsComponent implements Component {
     public Map<String, Integer> partiallyLearnedSkills = new HashMap<>();
 
     public boolean hasSkill(ResourceUrn skillUrn, int level) {
-        return learnedSkills.containsKey(skillUrn)
-                && learnedSkills.get(skillUrn) >= level;
+        return learnedSkills.containsKey(skillUrn.toString())
+                && learnedSkills.get(skillUrn.toString()) >= level;
+    }
+
+    public int getSkillLevel(ResourceUrn skillUrn) {
+        if (learnedSkills.containsKey(skillUrn.toString())) {
+            return learnedSkills.get(skillUrn.toString());
+        } else {
+            return 0;
+        }
     }
 }

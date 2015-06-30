@@ -22,7 +22,7 @@ import org.terasology.eventualSkills.components.EventualSkillDescriptionComponen
 import java.util.Map;
 
 public interface EventualSkillsManager {
-    Iterable<EventualSkillDescriptionComponent> listSkills();
+    Iterable<ResourceUrn> listSkills();
 
     EventualSkillDescriptionComponent getSkill(ResourceUrn skillUrn);
 

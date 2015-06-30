@@ -1,0 +1,96 @@
+{
+  "type": "EventualSkills:EventualSkillsTraining",
+  "skin": "EventualSkills:EventualSkills",
+  "contents": {
+    "type": "RowLayout",
+    "contents": [
+      {
+        "type": "RelativeLayout",
+        "contents": [
+          {
+            "type": "UIBox",
+            "layoutInfo": {
+              "position-top": {
+                "target": "TOP",
+                "widget": "mainContent",
+                "offset": -10
+              },
+              "position-left": {
+                "target": "LEFT",
+                "widget": "mainContent",
+                "offset": -10
+              },
+              "position-right": {
+                "target": "RIGHT",
+                "widget": "mainContent",
+                "offset": -10
+              },
+              "position-bottom": {
+                "target": "BOTTOM",
+                "widget": "mainContent",
+                "offset": -10
+              }
+            }
+          },
+          {
+            "type": "MigLayout",
+            "id": "mainContent",
+            "layoutInfo": {
+              "use-content-width": true,
+              "use-content-height": true,
+              "position-vertical-center": {
+              },
+              "position-horizontal-center": {
+              }
+            },
+            "layoutConstraints": "wrap 2, align left",
+            "colConstraints": "10[min][200:200:200]",
+            "rowConstraints": "[min]",
+            "contents": [
+              {
+                "type": "UIList",
+                "id": "skillList",
+                "family": "skill-list",
+                "layoutInfo": {
+                  "cc": "dock west, width 200px, height 200px"
+                }
+              },
+              {
+                "type": "UILabel",
+                "text": "Skill"
+              },
+              {
+                "type": "UILabel",
+                "id": "selectedSkillName"
+              },
+              {
+                "type": "UILabel",
+                "text": "Progress"
+              },
+              {
+                "type": "UILabel",
+                "id": "selectedSkillProgress"
+              },
+              {
+                "type": "UILabel",
+                "text": ""
+              },
+              {
+                "type": "UIButton",
+                "id": "selectedSkillAction"
+              },
+              {
+                "type": "UILabel",
+                "text": "Description"
+              },
+              {
+                "type": "UILabel",
+                "id": "selectedSkillDescription"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
