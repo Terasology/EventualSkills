@@ -1,6 +1,6 @@
 {
     "id" : "EventualSkills",
-    "version" : "0.1.0",
+    "version" : "0.1.0-SNAPSHOT",
     "author" : "Josharias",
     "displayName" : "Eventual Skills",
     "description" : "A library for adding time based skill leveling.",
