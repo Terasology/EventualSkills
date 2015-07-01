@@ -18,8 +18,8 @@ package org.terasology.eventualSkills.components;
 import org.terasology.assets.ResourceUrn;
 import org.terasology.entitySystem.Component;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class EntityEventualSkillsComponent implements Component {
     public String currentSkillInTraining;
@@ -29,13 +29,12 @@ public class EntityEventualSkillsComponent implements Component {
     public int currentTrainingCurrentSkillPoints;
     public long trainingLastTimeComputedSkillPoints;
     // a map of the skill and the level to which it has been learned
-    public Map<String, Integer> learnedSkills = new HashMap<>();
+    public Map<String, Integer> learnedSkills = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     // a map of the skill and how many skill points have already been acquired
-    public Map<String, Integer> partiallyLearnedSkills = new HashMap<>();
+    public Map<String, Integer> partiallyLearnedSkills = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     public boolean hasSkill(ResourceUrn skillUrn, int level) {
-        return learnedSkills.containsKey(skillUrn.toString())
-                && learnedSkills.get(skillUrn.toString()) >= level;
+        return getSkillLevel(skillUrn) >= level;
     }
 
     public int getSkillLevel(ResourceUrn skillUrn) {
