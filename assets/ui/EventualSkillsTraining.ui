@@ -45,7 +45,7 @@
             },
             "layoutConstraints": "wrap 2, align left",
             "colConstraints": "10[min][200:200:200]",
-            "rowConstraints": "[min]",
+            "rowConstraints": "[min][min][min][100][100]",
             "contents": [
               {
                 "type": "UIList",
@@ -86,6 +86,14 @@
               {
                 "type": "UILabel",
                 "id": "selectedSkillDescription"
+              },
+              {
+                "type": "UILabel",
+                "text": "Required Skills"
+              },
+              {
+                "type": "UILabel",
+                "id": "selectedSkillPrerequisiteSkills"
               }
             ]
           }

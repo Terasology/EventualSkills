@@ -35,12 +35,15 @@ import org.terasology.rendering.nui.widgets.UILabel;
 import org.terasology.rendering.nui.widgets.UIList;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EventualSkillsTraining extends BaseInteractionScreen {
     UIList<ResourceUrn> skillList;
     UILabel selectedSkillName;
     UILabel selectedSkillProgress;
+    UILabel selectedSkillPrerequisiteSkills;
     UILabel selectedSkillDescription;
     UIButton selectedSkillAction;
 
@@ -101,12 +104,12 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
             selectedSkillName.bindText(new ReadOnlyBinding<String>() {
                 @Override
                 public String get() {
-                    int currentLevel = 0;
-                    EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
-                    if (targetSkills != null) {
-                        currentLevel = targetSkills.getSkillLevel(selectedSkillUrn);
-                    }
                     if (selectedSkill != null) {
+                        int currentLevel = 0;
+                        EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
+                        if (targetSkills != null) {
+                            currentLevel = targetSkills.getSkillLevel(selectedSkillUrn);
+                        }
                         return selectedSkill.name + " level " + currentLevel;
                     } else {
                         return null;
@@ -160,6 +163,28 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
             });
         }
 
+        selectedSkillPrerequisiteSkills = find("selectedSkillPrerequisiteSkills", UILabel.class);
+        if (selectedSkillPrerequisiteSkills != null) {
+            selectedSkillPrerequisiteSkills.bindText(new ReadOnlyBinding<String>() {
+                @Override
+                public String get() {
+                    if (selectedSkillUrn != null) {
+                        EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
+                        EventualSkillsManager skillsManager = CoreRegistry.get(EventualSkillsManager.class);
+
+                        String result = "";
+                        Map<ResourceUrn, Integer> prerequisiteSkillsNeeded = getPrerequisiteSkillsNeeded(targetSkills, selectedSkill);
+                        for (Map.Entry<ResourceUrn, Integer> prereqSkill : prerequisiteSkillsNeeded.entrySet()) {
+                            result += skillsManager.getSkill(prereqSkill.getKey()).name + " " + prereqSkill.getValue() + "\r\n";
+                        }
+
+                        return result;
+                    } else {
+                        return null;
+                    }
+                }
+            });
+        }
 
         selectedSkillAction = find("selectedSkillAction", UIButton.class);
         if (selectedSkillAction != null) {
@@ -183,6 +208,18 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                     return selectedSkillUrn != null;
                 }
             });
+            selectedSkillAction.bindEnabled(new ReadOnlyBinding<Boolean>() {
+                @Override
+                public Boolean get() {
+                    EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
+                    if (selectedSkill != null && targetSkills != null) {
+                        Map<ResourceUrn, Integer> prerequisiteSkillsNeeded = getPrerequisiteSkillsNeeded(targetSkills, selectedSkill);
+                        return prerequisiteSkillsNeeded.size() == 0;
+                    } else {
+                        return false;
+                    }
+                }
+            });
             selectedSkillAction.subscribe(new ActivateEventListener() {
                 @Override
                 public void onActivated(UIWidget widget) {
@@ -197,6 +234,17 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                 }
             });
         }
+    }
+
+    private static Map<ResourceUrn, Integer> getPrerequisiteSkillsNeeded(EntityEventualSkillsComponent targetSkills, EventualSkillDescriptionComponent skillDescription) {
+        Map<ResourceUrn, Integer> prerequisiteSkillsNeeded = new HashMap<>();
+        for (Map.Entry<String, Integer> prereqSkill : skillDescription.prerequisiteSkills.entrySet()) {
+            ResourceUrn prereqSkillUrn = new ResourceUrn(prereqSkill.getKey());
+            if (targetSkills == null || !targetSkills.hasSkill(prereqSkillUrn, prereqSkill.getValue())) {
+                prerequisiteSkillsNeeded.put(prereqSkillUrn, prereqSkill.getValue());
+            }
+        }
+        return prerequisiteSkillsNeeded;
     }
 
     public void initializeWithTarget(EntityRef target) {
