@@ -30,6 +30,7 @@ import org.terasology.eventualSkills.components.EntityEventualSkillsComponent;
 import org.terasology.eventualSkills.components.EventualSkillDescriptionComponent;
 import org.terasology.eventualSkills.events.RequestStartTraining;
 import org.terasology.eventualSkills.events.RequestStopTraining;
+import org.terasology.logic.config.ModuleConfigManager;
 import org.terasology.logic.console.commandSystem.annotations.Command;
 import org.terasology.logic.console.commandSystem.annotations.CommandParam;
 import org.terasology.logic.console.commandSystem.annotations.Sender;
@@ -39,6 +40,7 @@ import org.terasology.registry.In;
 import org.terasology.registry.Share;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -53,6 +55,8 @@ public class EventualSkillsCommonSystem extends BaseComponentSystem implements E
     PrefabManager prefabManager;
     @In
     Time time;
+    @In
+    ModuleConfigManager moduleConfigManager;
 
     @Override
     public Iterable<ResourceUrn> listSkills() {
@@ -84,6 +88,19 @@ public class EventualSkillsCommonSystem extends BaseComponentSystem implements E
     }
 
     @Override
+    public Map<ResourceUrn, Integer> getPrerequisiteSkillsNeeded(EntityEventualSkillsComponent targetSkills, ResourceUrn skillUrn) {
+        EventualSkillDescriptionComponent skillDescription = getSkill(skillUrn);
+        Map<ResourceUrn, Integer> prerequisiteSkillsNeeded = new HashMap<>();
+        for (Map.Entry<String, Integer> prereqSkill : skillDescription.prerequisiteSkills.entrySet()) {
+            ResourceUrn prereqSkillUrn = new ResourceUrn(prereqSkill.getKey());
+            if (targetSkills == null || !targetSkills.hasSkill(prereqSkillUrn, prereqSkill.getValue())) {
+                prerequisiteSkillsNeeded.put(prereqSkillUrn, prereqSkill.getValue());
+            }
+        }
+        return prerequisiteSkillsNeeded;
+    }
+
+    @Override
     public int calculateCurrentTrainingSkillPoints(EntityEventualSkillsComponent skillComponent) {
         long currentTime = time.getGameTimeInMs();
         long lastComputedTime = skillComponent.trainingLastTimeComputedSkillPoints;
@@ -96,7 +113,11 @@ public class EventualSkillsCommonSystem extends BaseComponentSystem implements E
         if (rank <= 0 || level <= 0) {
             return 0;
         }
-        return (int) (rank * 250.0 * Math.pow(5.66, level - 1)) - skillPointsNeeded(rank, level - 1);
+
+        float skillpointMultiplier = moduleConfigManager.getFloatVariable("EventualSkills", "skillpointMultiplier", 1.0f);
+        float skillpointScaling = moduleConfigManager.getFloatVariable("EventualSkills", "skillpointScaling", 1.0f);
+
+        return (int) (skillpointMultiplier * rank * 250.0 * Math.pow(5.66, (level - 1) * skillpointScaling));
     }
 
     @Command(shortDescription = "Starts training a skill for you", runOnServer = true,

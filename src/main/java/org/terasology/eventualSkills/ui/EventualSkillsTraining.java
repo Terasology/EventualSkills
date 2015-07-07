@@ -35,7 +35,6 @@ import org.terasology.rendering.nui.widgets.UILabel;
 import org.terasology.rendering.nui.widgets.UIList;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -173,7 +172,7 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                         EventualSkillsManager skillsManager = CoreRegistry.get(EventualSkillsManager.class);
 
                         String result = "";
-                        Map<ResourceUrn, Integer> prerequisiteSkillsNeeded = getPrerequisiteSkillsNeeded(targetSkills, selectedSkill);
+                        Map<ResourceUrn, Integer> prerequisiteSkillsNeeded = skillsManager.getPrerequisiteSkillsNeeded(targetSkills, selectedSkillUrn);
                         for (Map.Entry<ResourceUrn, Integer> prereqSkill : prerequisiteSkillsNeeded.entrySet()) {
                             result += skillsManager.getSkill(prereqSkill.getKey()).name + " " + prereqSkill.getValue() + "\r\n";
                         }
@@ -212,9 +211,16 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                 @Override
                 public Boolean get() {
                     EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
-                    if (selectedSkill != null && targetSkills != null) {
-                        Map<ResourceUrn, Integer> prerequisiteSkillsNeeded = getPrerequisiteSkillsNeeded(targetSkills, selectedSkill);
-                        return prerequisiteSkillsNeeded.size() == 0;
+                    EventualSkillsManager skillsManager = CoreRegistry.get(EventualSkillsManager.class);
+
+                    if (selectedSkill != null) {
+                        if (targetSkills != null) {
+                            Map<ResourceUrn, Integer> prerequisiteSkillsNeeded = skillsManager.getPrerequisiteSkillsNeeded(targetSkills, selectedSkillUrn);
+                            return prerequisiteSkillsNeeded.size() == 0;
+                        } else {
+                            // allow starting training when a new player is made
+                            return skillsManager.getPrerequisiteSkillsNeeded(new EntityEventualSkillsComponent(), selectedSkillUrn).size() == 0;
+                        }
                     } else {
                         return false;
                     }
@@ -234,17 +240,6 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                 }
             });
         }
-    }
-
-    private static Map<ResourceUrn, Integer> getPrerequisiteSkillsNeeded(EntityEventualSkillsComponent targetSkills, EventualSkillDescriptionComponent skillDescription) {
-        Map<ResourceUrn, Integer> prerequisiteSkillsNeeded = new HashMap<>();
-        for (Map.Entry<String, Integer> prereqSkill : skillDescription.prerequisiteSkills.entrySet()) {
-            ResourceUrn prereqSkillUrn = new ResourceUrn(prereqSkill.getKey());
-            if (targetSkills == null || !targetSkills.hasSkill(prereqSkillUrn, prereqSkill.getValue())) {
-                prerequisiteSkillsNeeded.put(prereqSkillUrn, prereqSkill.getValue());
-            }
-        }
-        return prerequisiteSkillsNeeded;
     }
 
     public void initializeWithTarget(EntityRef target) {

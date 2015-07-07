@@ -17,20 +17,30 @@ package org.terasology.eventualSkills.components;
 
 import org.terasology.assets.ResourceUrn;
 import org.terasology.entitySystem.Component;
+import org.terasology.network.Replicate;
 
 import java.util.Map;
 import java.util.TreeMap;
 
 public class EntityEventualSkillsComponent implements Component {
+    @Replicate
     public String currentSkillInTraining;
+    @Replicate
     public int currentSkillLevelInTraining;
+    @Replicate
     public int currentSkillRankInTraining;
+    @Replicate
     public int currentTrainingTargetSkillPoints;
+    @Replicate
     public int currentTrainingCurrentSkillPoints;
+    @Replicate
     public long trainingLastTimeComputedSkillPoints;
+
     // a map of the skill and the level to which it has been learned
+    @Replicate
     public Map<String, Integer> learnedSkills = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     // a map of the skill and how many skill points have already been acquired
+    @Replicate
     public Map<String, Integer> partiallyLearnedSkills = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     public boolean hasSkill(ResourceUrn skillUrn, int level) {

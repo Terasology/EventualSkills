@@ -21,10 +21,10 @@ import org.terasology.network.ServerEvent;
 
 @ServerEvent
 public class RequestStartTraining implements Event {
-    public ResourceUrn skill;
+    public String skill;
 
     public RequestStartTraining(ResourceUrn skill) {
-        this.skill = skill;
+        this.skill = skill.toString();
     }
 
     public RequestStartTraining() {

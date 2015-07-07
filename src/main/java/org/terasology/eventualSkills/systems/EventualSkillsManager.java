@@ -28,6 +28,8 @@ public interface EventualSkillsManager {
 
     Map<EventualSkillDescriptionComponent, Integer> getPrerequisiteSkills(ResourceUrn skillUrn);
 
+    Map<ResourceUrn, Integer> getPrerequisiteSkillsNeeded(EntityEventualSkillsComponent targetSkills, ResourceUrn skillUrn);
+
     int skillPointsNeeded(int rank, int level);
 
     int calculateCurrentTrainingSkillPoints(EntityEventualSkillsComponent skillComponent);
