@@ -2,10 +2,10 @@
   "ModuleConfig": {
     "moduleName": "EventualSkills",
     "properties": {
+      // A value between 0-1. A raw multiplication of the total skill points needed for training. 1.0 will be the EVE Online value.
       "skillpointMultiplier": "1.0",
-      "skillpointMultiplierDescription": "A value between 0-1. A raw multiplication of the total skill points needed for training. 1.0 will be the EVE Online value.",
-      "skillpointScaling": "1.0",
-      "skillpointScalingDescription": "A value between 0-1. Scales the amount that skillpoints needed for training increase for each additional level. 1.0 will be the EVE Online value."
+      // A value between 0-1. Scales the amount that skillpoints needed for training increase for each additional level. 1.0 will be the EVE Online value.
+      "skillpointScaling": "1.0"
     }
   }
 }
