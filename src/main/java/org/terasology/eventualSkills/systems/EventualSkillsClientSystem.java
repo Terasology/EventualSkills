@@ -35,6 +35,12 @@ public class EventualSkillsClientSystem extends BaseComponentSystem {
     @In
     NUIManager nuiManager;
 
+    @Override
+    public void initialise() {
+        super.initialise();
+        nuiManager.getHUD().addHUDElement("EventualSkills:NoSkillsNagWidget");
+    }
+
     @ReceiveEvent(components = ClientComponent.class)
     public void onEventualSkillsButton(EventualSkillsButton event, EntityRef entity) {
         if (event.getState() == ButtonState.DOWN) {

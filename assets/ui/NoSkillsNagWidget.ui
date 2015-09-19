@@ -1,0 +1,27 @@
+{
+  "type": "NoSkillsNagWidget",
+  "skin": "default",
+  "contents": {
+    "type": "relativeLayout",
+    "contents": [
+      {
+        "type": "columnLayout",
+        "contents": [
+          {
+            "type": "UIBox",
+            "content": {
+              "type": "UILabel",
+              "id": "message"
+            }
+          }
+        ],
+        "layoutInfo": {
+          "use-content-width": true,
+          "use-content-height": true,
+          "position-right": {},
+          "position-top": {}
+        }
+      }
+    ]
+  }
+}
