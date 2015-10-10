@@ -109,7 +109,7 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                         if (targetSkills != null) {
                             currentLevel = targetSkills.getSkillLevel(selectedSkillUrn);
                         }
-                        return selectedSkill.name + " level " + currentLevel;
+                        return selectedSkill.name + " (" + selectedSkill.shortName + ") level " + currentLevel;
                     } else {
                         return null;
                     }
@@ -223,6 +223,16 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                         }
                     } else {
                         return false;
+                    }
+                }
+            });
+            selectedSkillAction.bindTooltipString(new ReadOnlyBinding<String>() {
+                @Override
+                public String get() {
+                    if (!selectedSkillAction.isEnabled()) {
+                        return "Required skills not yet learned";
+                    } else {
+                        return null;
                     }
                 }
             });

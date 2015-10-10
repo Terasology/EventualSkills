@@ -25,12 +25,12 @@ import org.terasology.rendering.nui.widgets.UIImage;
 import org.terasology.rendering.nui.widgets.UILabel;
 
 public final class EventualSkillsUIUtil {
-    public static UIWidget createEventualSkillsIcon(ResourceUrn skillUrn) {
+    public static UIWidget createEventualSkillsIcon(ResourceUrn skillUrn, int level) {
         EventualSkillsManager eventualSkillsManager = CoreRegistry.get(EventualSkillsManager.class);
         EventualSkillDescriptionComponent skillDescriptionComponent = eventualSkillsManager.getSkill(skillUrn);
 
         UIImage image = new UIImage(Assets.getTextureRegion("EventualSkills:EventualSkills#skill").get());
-        UILabel label = new UILabel(String.valueOf(skillDescriptionComponent.rank));
+        UILabel label = new UILabel(String.valueOf(skillDescriptionComponent.shortName + "\n" + level));
         OverlapLayout layout = new OverlapLayout();
         layout.addWidget(image);
         layout.addWidget(label);
