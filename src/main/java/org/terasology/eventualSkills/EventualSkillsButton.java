@@ -21,7 +21,7 @@ import org.terasology.input.InputType;
 import org.terasology.input.Keyboard;
 import org.terasology.input.RegisterBindButton;
 
-@RegisterBindButton(id = "eventualSkills", description = "Open Skills")
+@RegisterBindButton(id = "eventualSkills", description = "Open Skills", category = "general")
 @DefaultBinding(type = InputType.KEY, id = Keyboard.KeyId.K)
 public class EventualSkillsButton extends BindButtonEvent {
 }
