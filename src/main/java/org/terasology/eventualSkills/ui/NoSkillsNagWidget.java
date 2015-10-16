@@ -37,7 +37,7 @@ public class NoSkillsNagWidget extends CoreHudWidget {
                     EntityRef targetEntity = CoreRegistry.get(LocalPlayer.class).getCharacterEntity();
                     EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
                     if (targetSkills == null || targetSkills.learnedSkills.size() == 0) {
-                        return "You have no skills, press 'K' to start training";
+                        return "You have no skills, press 'L' to start training";
                     }
                     return null;
                 }
