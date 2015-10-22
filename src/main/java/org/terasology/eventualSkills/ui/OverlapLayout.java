@@ -133,7 +133,7 @@ public class OverlapLayout extends CoreLayout<LayoutHint> {
 
     @Override
     public void removeWidget(UIWidget element) {
-        // TODO: Implement (added as compile fix after engine change)
+        widgets.remove(element);
     }
 
 }
