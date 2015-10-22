@@ -89,7 +89,7 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                 public void draw(ResourceUrn value, Canvas canvas) {
                     EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
                     if (targetSkills != null) {
-                        if (value.equals(new ResourceUrn(targetSkills.currentSkillInTraining))) {
+                        if (targetSkills.currentSkillInTraining != null && value.equals(new ResourceUrn(targetSkills.currentSkillInTraining))) {
                             canvas.setMode("training");
                         }
                     }
@@ -136,7 +136,7 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                 public String get() {
                     EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
                     if (targetSkills != null && selectedSkillUrn != null) {
-                        if (selectedSkillUrn.equals(new ResourceUrn(targetSkills.currentSkillInTraining))) {
+                        if (targetSkills.currentSkillInTraining != null && selectedSkillUrn.equals(new ResourceUrn(targetSkills.currentSkillInTraining))) {
                             EventualSkillsManager skillsManager = CoreRegistry.get(EventualSkillsManager.class);
                             int totalSkillPoints = skillsManager.skillPointsNeeded(
                                     targetSkills.currentSkillRankInTraining,
@@ -192,7 +192,7 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                 public String get() {
                     if (selectedSkillUrn != null) {
                         EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
-                        if (targetSkills == null || !selectedSkillUrn.equals(new ResourceUrn(targetSkills.currentSkillInTraining))) {
+                        if (targetSkills == null || targetSkills.currentSkillInTraining == null || !selectedSkillUrn.equals(new ResourceUrn(targetSkills.currentSkillInTraining))) {
                             return "Start Training";
                         } else {
                             return "Stop Training";
@@ -241,7 +241,7 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                 public void onActivated(UIWidget widget) {
                     if (selectedSkillUrn != null) {
                         EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
-                        if (targetSkills != null && selectedSkillUrn.equals(new ResourceUrn(targetSkills.currentSkillInTraining))) {
+                        if (targetSkills != null && targetSkills.currentSkillInTraining != null && selectedSkillUrn.equals(new ResourceUrn(targetSkills.currentSkillInTraining))) {
                             targetEntity.send(new RequestStopTraining());
                         } else {
                             targetEntity.send(new RequestStartTraining(selectedSkillUrn));

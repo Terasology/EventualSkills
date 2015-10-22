@@ -245,4 +245,19 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
             return "Error: skill not given";
         }
     }
+
+    @Command(shortDescription = "Finish training the skill currently being trained", runOnServer = true,
+            requiredPermission = PermissionManager.CHEAT_PERMISSION)
+    public String finishTrainingEventualSkill(
+            @Sender EntityRef client) {
+        EntityRef playerEntity = client.getComponent(ClientComponent.class).character;
+        EntityEventualSkillsComponent entityEventualSkillsComponent = playerEntity.getComponent(EntityEventualSkillsComponent.class);
+        String currentSkillInTraining = entityEventualSkillsComponent.currentSkillInTraining;
+        if (currentSkillInTraining != null) {
+            completeTraining(playerEntity);
+            return currentSkillInTraining + " completed";
+        } else {
+            return "No skill currently being trained";
+        }
+    }
 }
