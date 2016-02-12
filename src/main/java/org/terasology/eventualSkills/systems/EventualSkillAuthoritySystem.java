@@ -30,6 +30,7 @@ import org.terasology.eventualSkills.components.EntityEventualSkillsComponent;
 import org.terasology.eventualSkills.components.EventualSkillDescriptionComponent;
 import org.terasology.eventualSkills.events.RequestStartTraining;
 import org.terasology.eventualSkills.events.RequestStopTraining;
+import org.terasology.eventualSkills.events.SkillTrainedEvent;
 import org.terasology.logic.console.commandSystem.annotations.Command;
 import org.terasology.logic.console.commandSystem.annotations.CommandParam;
 import org.terasology.logic.console.commandSystem.annotations.Sender;
@@ -66,6 +67,7 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
             }
             saveEntityEventualSkillComponent(entityRef, skillComponent);
             scheduleEntityTrainingCompletion(skillComponent, entityRef);
+            entityRef.send(new SkillTrainedEvent(skillUrn, level));
             logger.info(entityRef.toString() + " given skill " + skill + " level " + level);
         }
     }
@@ -102,9 +104,11 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
             String completedSkill = skillComponent.currentSkillInTraining;
             if (completedSkill != null) {
                 calculatePartialTraining(skillComponent);
+                SkillTrainedEvent skillTrainedEvent = null;
                 if (skillComponent.currentSkillInTraining != null) {
                     skillComponent.learnedSkills.put(skillComponent.currentSkillInTraining, skillComponent.currentSkillLevelInTraining);
                     skillComponent.partiallyLearnedSkills.remove(skillComponent.currentSkillInTraining);
+                    skillTrainedEvent = new SkillTrainedEvent(new ResourceUrn(skillComponent.currentSkillInTraining), skillComponent.currentSkillLevelInTraining);
 
                     setSkillInTraining(skillComponent, EventualSkillsCommonSystem.IDLE_SKILL_URN);
                     logger.info(entityRef.toString() + " completed training skill " + completedSkill);
@@ -112,6 +116,9 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
                     logger.info(entityRef.toString() + " could not completed training skill, no skill currently being trained");
                 }
                 saveEntityEventualSkillComponent(entityRef, skillComponent);
+                if (skillTrainedEvent != null) {
+                    entityRef.send(skillTrainedEvent);
+                }
                 scheduleEntityTrainingCompletion(skillComponent, entityRef);
             }
         }
@@ -185,7 +192,8 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
         }
 
         skillComponent.currentSkillRankInTraining = skillDescription.rank;
-        skillComponent.currentTrainingTargetSkillPoints = eventualSkillsManager.skillPointsNeeded(skillComponent.currentSkillRankInTraining, skillComponent.currentSkillLevelInTraining);
+        skillComponent.currentTrainingTargetSkillPoints =
+                eventualSkillsManager.skillPointsNeeded(skillComponent.currentSkillRankInTraining, skillComponent.currentSkillLevelInTraining);
         skillComponent.currentSkillInTraining = skill;
         skillComponent.trainingLastTimeComputedSkillPoints = time.getGameTimeInMs();
     }
