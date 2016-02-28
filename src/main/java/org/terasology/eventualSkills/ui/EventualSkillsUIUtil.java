@@ -15,7 +15,7 @@
  */
 package org.terasology.eventualSkills.ui;
 
-import org.terasology.asset.Assets;
+import org.terasology.utilities.Assets;
 import org.terasology.assets.ResourceUrn;
 import org.terasology.eventualSkills.components.EventualSkillDescriptionComponent;
 import org.terasology.eventualSkills.systems.EventualSkillsManager;
