@@ -17,7 +17,6 @@ package org.terasology.eventualSkills.systems;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.utilities.Assets;
 import org.terasology.assets.ResourceUrn;
 import org.terasology.engine.Time;
 import org.terasology.entitySystem.entity.EntityRef;
@@ -31,6 +30,7 @@ import org.terasology.eventualSkills.components.EventualSkillDescriptionComponen
 import org.terasology.eventualSkills.events.RequestStartTraining;
 import org.terasology.eventualSkills.events.RequestStopTraining;
 import org.terasology.eventualSkills.events.SkillTrainedEvent;
+import org.terasology.eventualSkills.events.SkillTrainedOwnerEvent;
 import org.terasology.logic.console.commandSystem.annotations.Command;
 import org.terasology.logic.console.commandSystem.annotations.CommandParam;
 import org.terasology.logic.console.commandSystem.annotations.Sender;
@@ -39,6 +39,7 @@ import org.terasology.logic.delay.DelayedActionTriggeredEvent;
 import org.terasology.logic.permission.PermissionManager;
 import org.terasology.network.ClientComponent;
 import org.terasology.registry.In;
+import org.terasology.utilities.Assets;
 
 import java.util.Map;
 import java.util.Optional;
@@ -267,5 +268,10 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
         } else {
             return "No skill currently being trained";
         }
+    }
+
+    @ReceiveEvent
+    public void onSkillTrainedSendOwnerSkillTrainedEvent(SkillTrainedEvent event, EntityRef entityRef) {
+        entityRef.send(new SkillTrainedOwnerEvent(event.getSkillTrained(), event.getLevelTrained()));
     }
 }
