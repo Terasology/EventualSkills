@@ -1,0 +1,13 @@
+{
+  "parent": "engine:iconItem",
+  "DisplayName": {
+    "name": "Skill Book"
+  },
+  "Item": {
+    "icon": "engine:items#brownBook",
+    "consumedOnUse": true
+  },
+  "SkillGivingItem": {
+    "skill": "EventualSkills:Idle"
+  }
+}

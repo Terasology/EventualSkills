@@ -15,12 +15,12 @@
  */
 package org.terasology.eventualSkills.components;
 
+import com.google.common.collect.Maps;
 import org.terasology.assets.ResourceUrn;
 import org.terasology.entitySystem.Component;
 import org.terasology.network.Replicate;
 
 import java.util.Map;
-import java.util.TreeMap;
 
 public class EntityEventualSkillsComponent implements Component {
     @Replicate
@@ -36,20 +36,20 @@ public class EntityEventualSkillsComponent implements Component {
     @Replicate
     public long trainingLastTimeComputedSkillPoints;
 
-    // a map of the skill and the level to which it has been learned
+    // a map of the skill and the level to which it has been learned.  These must always be lowercased, otherwise chaos.
     @Replicate
-    public Map<String, Integer> learnedSkills = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-    // a map of the skill and how many skill points have already been acquired
+    public Map<String, Integer> learnedSkills = Maps.newHashMap();
+    // a map of the skill and how many skill points have already been acquired.  These must always be lowercased, otherwise chaos.
     @Replicate
-    public Map<String, Integer> partiallyLearnedSkills = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    public Map<String, Integer> partiallyLearnedSkills = Maps.newHashMap();
 
     public boolean hasSkill(ResourceUrn skillUrn, int level) {
         return getSkillLevel(skillUrn) >= level;
     }
 
     public int getSkillLevel(ResourceUrn skillUrn) {
-        if (learnedSkills.containsKey(skillUrn.toString())) {
-            return learnedSkills.get(skillUrn.toString());
+        if (learnedSkills.containsKey(skillUrn.toString().toLowerCase())) {
+            return learnedSkills.get(skillUrn.toString().toLowerCase());
         } else {
             return 0;
         }

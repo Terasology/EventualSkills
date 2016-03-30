@@ -18,9 +18,10 @@ package org.terasology.eventualSkills.systems;
 import com.google.api.client.util.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.utilities.Assets;
 import org.terasology.assets.ResourceUrn;
 import org.terasology.engine.Time;
+import org.terasology.entitySystem.entity.EntityBuilder;
+import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.entitySystem.prefab.PrefabManager;
@@ -28,16 +29,20 @@ import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.eventualSkills.components.EntityEventualSkillsComponent;
 import org.terasology.eventualSkills.components.EventualSkillDescriptionComponent;
+import org.terasology.eventualSkills.components.SkillGivingItemComponent;
 import org.terasology.eventualSkills.events.RequestStartTraining;
 import org.terasology.eventualSkills.events.RequestStopTraining;
+import org.terasology.logic.common.DisplayNameComponent;
 import org.terasology.logic.config.ModuleConfigManager;
 import org.terasology.logic.console.commandSystem.annotations.Command;
 import org.terasology.logic.console.commandSystem.annotations.CommandParam;
 import org.terasology.logic.console.commandSystem.annotations.Sender;
+import org.terasology.logic.inventory.events.GiveItemEvent;
 import org.terasology.logic.permission.PermissionManager;
 import org.terasology.network.ClientComponent;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
+import org.terasology.utilities.Assets;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,6 +62,8 @@ public class EventualSkillsCommonSystem extends BaseComponentSystem implements E
     Time time;
     @In
     ModuleConfigManager moduleConfigManager;
+    @In
+    EntityManager entityManager;
 
     @Override
     public Iterable<ResourceUrn> listSkills() {
@@ -152,5 +159,36 @@ public class EventualSkillsCommonSystem extends BaseComponentSystem implements E
         }
 
         return "No training in progress";
+    }
+
+    @Command(shortDescription = "Gives you a skill book of the specified skill", runOnServer = true,
+            requiredPermission = PermissionManager.CHEAT_PERMISSION)
+    public String giveSkillBook(
+            @Sender EntityRef client,
+            @CommandParam("skill") String skill,
+            @CommandParam(value = "level", required = false) Integer level) {
+        ResourceUrn skillUrn = new ResourceUrn(skill);
+        EntityBuilder itemBuilder = entityManager.newBuilder("EventualSkills:SkillBook");
+        SkillGivingItemComponent skillGivingItemComponent = new SkillGivingItemComponent();
+        skillGivingItemComponent.skill = skillUrn.toString();
+        skillGivingItemComponent.level = level;
+        itemBuilder.addComponent(skillGivingItemComponent);
+
+        EventualSkillDescriptionComponent eventualSkillDescriptionComponent = getSkill(skillUrn);
+        if( eventualSkillDescriptionComponent == null) {
+            return "Skill not found";
+        }
+        DisplayNameComponent displayNameComponent = new DisplayNameComponent();
+        displayNameComponent.name = eventualSkillDescriptionComponent.name + " " + (level == null ? "+1" : level.toString()) + " skill book";
+        itemBuilder.addComponent(displayNameComponent);
+
+        EntityRef item = itemBuilder.build();
+        EntityRef playerEntity = client.getComponent(ClientComponent.class).character;
+        GiveItemEvent giveItemEvent = new GiveItemEvent(playerEntity);
+        item.send(giveItemEvent);
+        if( !giveItemEvent.isHandled()) {
+            item.destroy();
+        }
+        return "You received a " + skill + " skill book";
     }
 }

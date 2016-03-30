@@ -22,7 +22,7 @@ import org.terasology.eventualSkills.components.EventualSkillDescriptionComponen
 import org.terasology.eventualSkills.events.RequestStartTraining;
 import org.terasology.eventualSkills.events.RequestStopTraining;
 import org.terasology.eventualSkills.systems.EventualSkillsManager;
-import org.terasology.registry.CoreRegistry;
+import org.terasology.registry.In;
 import org.terasology.rendering.nui.BaseInteractionScreen;
 import org.terasology.rendering.nui.Canvas;
 import org.terasology.rendering.nui.UIWidget;
@@ -39,6 +39,9 @@ import java.util.List;
 import java.util.Map;
 
 public class EventualSkillsTraining extends BaseInteractionScreen {
+    @In
+    EventualSkillsManager eventualSkillsManager;
+
     UIList<ResourceUrn> skillList;
     UILabel selectedSkillName;
     UILabel selectedSkillProgress;
@@ -55,7 +58,7 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
     @Override
     protected void initialise() {
         allSkills = new ArrayList<>();
-        for (ResourceUrn skill : CoreRegistry.get(EventualSkillsManager.class).listSkills()) {
+        for (ResourceUrn skill : eventualSkillsManager.listSkills()) {
             allSkills.add(skill);
         }
 
@@ -76,13 +79,13 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                 @Override
                 public void set(ResourceUrn value) {
                     selectedSkillUrn = value;
-                    selectedSkill = CoreRegistry.get(EventualSkillsManager.class).getSkill(value);
+                    selectedSkill = eventualSkillsManager.getSkill(value);
                 }
             });
             skillList.setItemRenderer(new StringTextRenderer<ResourceUrn>() {
                 @Override
                 public String getString(ResourceUrn value) {
-                    return CoreRegistry.get(EventualSkillsManager.class).getSkill(value).name;
+                    return eventualSkillsManager.getSkill(value).name;
                 }
 
                 @Override
@@ -137,7 +140,7 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                     EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
                     if (targetSkills != null && selectedSkillUrn != null) {
                         if (targetSkills.currentSkillInTraining != null && selectedSkillUrn.equals(new ResourceUrn(targetSkills.currentSkillInTraining))) {
-                            EventualSkillsManager skillsManager = CoreRegistry.get(EventualSkillsManager.class);
+                            EventualSkillsManager skillsManager = eventualSkillsManager;
                             int totalSkillPoints = skillsManager.skillPointsNeeded(
                                     targetSkills.currentSkillRankInTraining,
                                     targetSkills.getSkillLevel(new ResourceUrn(targetSkills.currentSkillInTraining)) + 1);
@@ -145,13 +148,13 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                             return "Level " + targetSkills.currentSkillLevelInTraining + " " + currentSkillPoints + "/" + totalSkillPoints;
                         } else {
                             int nextSkillLevel = targetSkills.getSkillLevel(selectedSkillUrn) + 1;
-                            EventualSkillsManager skillsManager = CoreRegistry.get(EventualSkillsManager.class);
+                            EventualSkillsManager skillsManager = eventualSkillsManager;
                             int totalSkillPoints = skillsManager.skillPointsNeeded(
                                     skillsManager.getSkill(selectedSkillUrn).rank,
                                     nextSkillLevel);
                             int currentSkillPoints = 0;
-                            if (targetSkills.partiallyLearnedSkills.containsKey(selectedSkillUrn.toString())) {
-                                currentSkillPoints = targetSkills.partiallyLearnedSkills.get(selectedSkillUrn.toString());
+                            if (targetSkills.partiallyLearnedSkills.containsKey(selectedSkillUrn.toString().toLowerCase())) {
+                                currentSkillPoints = targetSkills.partiallyLearnedSkills.get(selectedSkillUrn.toString().toLowerCase());
                             }
                             return "Level " + nextSkillLevel + " " + currentSkillPoints + "/" + totalSkillPoints;
                         }
@@ -169,7 +172,7 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                 public String get() {
                     if (selectedSkillUrn != null) {
                         EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
-                        EventualSkillsManager skillsManager = CoreRegistry.get(EventualSkillsManager.class);
+                        EventualSkillsManager skillsManager = eventualSkillsManager;
 
                         String result = "";
                         Map<ResourceUrn, Integer> prerequisiteSkillsNeeded = skillsManager.getPrerequisiteSkillsNeeded(targetSkills, selectedSkillUrn);
@@ -211,7 +214,7 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                 @Override
                 public Boolean get() {
                     EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
-                    EventualSkillsManager skillsManager = CoreRegistry.get(EventualSkillsManager.class);
+                    EventualSkillsManager skillsManager = eventualSkillsManager;
 
                     if (selectedSkill != null) {
                         if (targetSkills != null) {

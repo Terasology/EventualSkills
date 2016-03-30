@@ -27,6 +27,9 @@ public class SkillTrainedOwnerEvent implements Event {
     ResourceUrn skillTrained;
     int levelTrained;
 
+    public SkillTrainedOwnerEvent() {
+    }
+
     public SkillTrainedOwnerEvent(ResourceUrn skillTrained, int levelTrained) {
         this.skillTrained = skillTrained;
         this.levelTrained = levelTrained;
