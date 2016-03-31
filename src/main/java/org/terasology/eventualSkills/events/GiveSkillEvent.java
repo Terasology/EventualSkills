@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 MovingBlocks
+ * Copyright 2016 MovingBlocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,37 @@ package org.terasology.eventualSkills.events;
 
 import org.terasology.assets.ResourceUrn;
 import org.terasology.entitySystem.event.Event;
-import org.terasology.network.ServerEvent;
 
-@ServerEvent
-public class RequestStartTraining implements Event {
-    public String skill;
+public class GiveSkillEvent implements Event {
+    ResourceUrn skill;
+    Integer level;
 
-    public RequestStartTraining(ResourceUrn skill) {
-        this.skill = skill.toString();
+    public GiveSkillEvent() {
     }
 
-    public RequestStartTraining() {
+    public GiveSkillEvent(String skill) {
+        this.skill = new ResourceUrn(skill);
+    }
 
+    public GiveSkillEvent(ResourceUrn skill) {
+        this.skill = skill;
+    }
+
+    public GiveSkillEvent(String skill, Integer level) {
+        this(skill);
+        this.level = level;
+    }
+
+    public GiveSkillEvent(ResourceUrn skill, Integer level) {
+        this(skill);
+        this.level = level;
+    }
+
+    public ResourceUrn getSkill() {
+        return skill;
+    }
+
+    public Integer getLevel() {
+        return level;
     }
 }

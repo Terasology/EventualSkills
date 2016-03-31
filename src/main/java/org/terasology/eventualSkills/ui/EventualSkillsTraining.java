@@ -19,8 +19,8 @@ import org.terasology.assets.ResourceUrn;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.eventualSkills.components.EntityEventualSkillsComponent;
 import org.terasology.eventualSkills.components.EventualSkillDescriptionComponent;
-import org.terasology.eventualSkills.events.RequestStartTraining;
-import org.terasology.eventualSkills.events.RequestStopTraining;
+import org.terasology.eventualSkills.events.StartTrainingSkillRequestEvent;
+import org.terasology.eventualSkills.events.StopTrainingSkillRequestEvent;
 import org.terasology.eventualSkills.systems.EventualSkillsManager;
 import org.terasology.registry.In;
 import org.terasology.rendering.nui.BaseInteractionScreen;
@@ -245,9 +245,9 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                     if (selectedSkillUrn != null) {
                         EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
                         if (targetSkills != null && targetSkills.currentSkillInTraining != null && selectedSkillUrn.equals(new ResourceUrn(targetSkills.currentSkillInTraining))) {
-                            targetEntity.send(new RequestStopTraining());
+                            targetEntity.send(new StopTrainingSkillRequestEvent());
                         } else {
-                            targetEntity.send(new RequestStartTraining(selectedSkillUrn));
+                            targetEntity.send(new StartTrainingSkillRequestEvent(selectedSkillUrn));
                         }
                     }
                 }

@@ -15,11 +15,19 @@
  */
 package org.terasology.eventualSkills.events;
 
+import org.terasology.assets.ResourceUrn;
 import org.terasology.entitySystem.event.Event;
 import org.terasology.network.ServerEvent;
 
 @ServerEvent
-public class RequestStopTraining implements Event {
-    public RequestStopTraining() {
+public class StartTrainingSkillRequestEvent implements Event {
+    public String skill;
+
+    public StartTrainingSkillRequestEvent(ResourceUrn skill) {
+        this.skill = skill.toString();
+    }
+
+    public StartTrainingSkillRequestEvent() {
+
     }
 }

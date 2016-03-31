@@ -27,14 +27,10 @@ import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.eventualSkills.components.EntityEventualSkillsComponent;
 import org.terasology.eventualSkills.components.EventualSkillDescriptionComponent;
-import org.terasology.eventualSkills.components.SkillGivingItemComponent;
-import org.terasology.eventualSkills.events.RequestStartTraining;
-import org.terasology.eventualSkills.events.RequestStopTraining;
 import org.terasology.eventualSkills.events.SkillTrainedEvent;
-import org.terasology.eventualSkills.events.SkillTrainedOwnerEvent;
-import org.terasology.logic.common.ActivateEvent;
+import org.terasology.eventualSkills.events.StartTrainingSkillRequestEvent;
+import org.terasology.eventualSkills.events.StopTrainingSkillRequestEvent;
 import org.terasology.logic.console.commandSystem.annotations.Command;
-import org.terasology.logic.console.commandSystem.annotations.CommandParam;
 import org.terasology.logic.console.commandSystem.annotations.Sender;
 import org.terasology.logic.delay.DelayManager;
 import org.terasology.logic.delay.DelayedActionTriggeredEvent;
@@ -59,29 +55,51 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
     @In
     EventualSkillsManager eventualSkillsManager;
 
-    public void giveSkill(EntityRef entityRef, ResourceUrn skillUrn, int level) {
-        if (skillUrn != null && entityRef != null) {
-            String skill = skillUrn.toString().toLowerCase();
-            EntityEventualSkillsComponent skillComponent = getEntityEventualSkillComponent(entityRef);
-            skillComponent.partiallyLearnedSkills.remove(skill);
-            skillComponent.learnedSkills.put(skill, level);
-            if (skill.equals(skillComponent.currentSkillInTraining)) {
-                setSkillInTraining(skillComponent, EventualSkillsCommonSystem.IDLE_SKILL_URN);
-            }
-            saveEntityEventualSkillComponent(entityRef, skillComponent);
-            scheduleEntityTrainingCompletion(skillComponent, entityRef);
-            entityRef.send(new SkillTrainedEvent(skillUrn, level));
-            logger.info(entityRef.toString() + " given skill " + skill + " level " + level);
+    /// reschedule skill if the skill is manually given
+    @ReceiveEvent
+    public void rescheduleSkillAfterSkillTrained(SkillTrainedEvent event, EntityRef entityRef, EntityEventualSkillsComponent entityEventualSkillsComponent) {
+        scheduleEntityTrainingCompletion(entityEventualSkillsComponent, entityRef);
+    }
+
+    @ReceiveEvent
+    public void onTrainingDelayCompletion(DelayedActionTriggeredEvent event, EntityRef entityRef) {
+        if (event.getActionId().equals(DELAY_MANAGER_ACTION)) {
+            completeTraining(entityRef);
         }
     }
 
-    public void startTraining(EntityRef entityRef, ResourceUrn skillUrn) {
+    @ReceiveEvent
+    public void onRequestStartTraining(StartTrainingSkillRequestEvent event, EntityRef entity) {
+        startTraining(entity, new ResourceUrn(event.skill));
+    }
+
+    @ReceiveEvent
+    public void onRequestStopTraining(StopTrainingSkillRequestEvent event, EntityRef entity) {
+        stopTraining(entity);
+    }
+
+    @Command(shortDescription = "Finish training the skill currently being trained", runOnServer = true,
+            requiredPermission = PermissionManager.CHEAT_PERMISSION)
+    public String finishTrainingEventualSkill(
+            @Sender EntityRef client) {
+        EntityRef playerEntity = client.getComponent(ClientComponent.class).character;
+        EntityEventualSkillsComponent entityEventualSkillsComponent = playerEntity.getComponent(EntityEventualSkillsComponent.class);
+        String currentSkillInTraining = entityEventualSkillsComponent.currentSkillInTraining;
+        if (currentSkillInTraining != null) {
+            completeTraining(playerEntity);
+            return currentSkillInTraining + " completed";
+        } else {
+            return "No skill currently being trained";
+        }
+    }
+
+    private void startTraining(EntityRef entityRef, ResourceUrn skillUrn) {
         if (skillUrn != null && entityRef != null) {
             EntityEventualSkillsComponent skillComponent = getEntityEventualSkillComponent(entityRef);
             if (eventualSkillsManager.getPrerequisiteSkillsNeeded(skillComponent, skillUrn).size() == 0) {
                 savePartialTraining(skillComponent);
                 setSkillInTraining(skillComponent, skillUrn);
-                saveEntityEventualSkillComponent(entityRef, skillComponent);
+                entityRef.addOrSaveComponent(skillComponent);
                 scheduleEntityTrainingCompletion(skillComponent, entityRef);
                 logger.info(entityRef.toString() + " started training skill " + skillUrn.toString());
             } else {
@@ -90,18 +108,18 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
         }
     }
 
-    public void stopTraining(EntityRef entityRef) {
+    private void stopTraining(EntityRef entityRef) {
         if (entityRef != null) {
             EntityEventualSkillsComponent skillComponent = getEntityEventualSkillComponent(entityRef);
             savePartialTraining(skillComponent);
             setSkillInTraining(skillComponent, EventualSkillsCommonSystem.IDLE_SKILL_URN);
-            saveEntityEventualSkillComponent(entityRef, skillComponent);
+            entityRef.addOrSaveComponent(skillComponent);
             scheduleEntityTrainingCompletion(skillComponent, entityRef);
             logger.info(entityRef.toString() + " stopped training skill");
         }
     }
 
-    public void completeTraining(EntityRef entityRef) {
+    private void completeTraining(EntityRef entityRef) {
         if (entityRef != null) {
             EntityEventualSkillsComponent skillComponent = getEntityEventualSkillComponent(entityRef);
             String completedSkill = skillComponent.currentSkillInTraining;
@@ -118,7 +136,7 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
                 } else {
                     logger.info(entityRef.toString() + " could not completed training skill, no skill currently being trained");
                 }
-                saveEntityEventualSkillComponent(entityRef, skillComponent);
+                entityRef.addOrSaveComponent(skillComponent);
                 if (skillTrainedEvent != null) {
                     entityRef.send(skillTrainedEvent);
                 }
@@ -126,7 +144,6 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
             }
         }
     }
-
 
     private void scheduleEntityTrainingCompletion(EntityEventualSkillsComponent skillComponent, EntityRef entityRef) {
         if (delayManager.hasDelayedAction(entityRef, DELAY_MANAGER_ACTION)) {
@@ -142,8 +159,12 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
 
     private void savePartialTraining(EntityEventualSkillsComponent skillComponent) {
         if (skillComponent.currentSkillInTraining != null) {
-            calculatePartialTraining(skillComponent);
-            skillComponent.partiallyLearnedSkills.put(skillComponent.currentSkillInTraining, skillComponent.currentTrainingCurrentSkillPoints);
+            ResourceUrn currentSkillInTrainingUrn = new ResourceUrn(skillComponent.currentSkillInTraining);
+            // only save the partial skill training if we have not already learned this skill level
+            if (skillComponent.currentSkillLevelInTraining > skillComponent.getSkillLevel(currentSkillInTrainingUrn)) {
+                calculatePartialTraining(skillComponent);
+                skillComponent.partiallyLearnedSkills.put(skillComponent.currentSkillInTraining.toLowerCase(), skillComponent.currentTrainingCurrentSkillPoints);
+            }
         }
         skillComponent.currentSkillInTraining = null;
         skillComponent.currentTrainingCurrentSkillPoints = 0;
@@ -209,87 +230,5 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
             entityEventualSkillsComponent = new EntityEventualSkillsComponent();
         }
         return entityEventualSkillsComponent;
-    }
-
-    private void saveEntityEventualSkillComponent(EntityRef entityRef, EntityEventualSkillsComponent entityEventualSkillsComponent) {
-        if (entityRef.hasComponent(EntityEventualSkillsComponent.class)) {
-            entityRef.saveComponent(entityEventualSkillsComponent);
-        } else {
-            entityRef.addComponent(entityEventualSkillsComponent);
-        }
-    }
-
-    @ReceiveEvent
-    public void onTrainingDelayCompletion(DelayedActionTriggeredEvent event, EntityRef entityRef) {
-        if (event.getActionId().equals(DELAY_MANAGER_ACTION)) {
-            completeTraining(entityRef);
-        }
-    }
-
-    @ReceiveEvent
-    public void onRequestStartTraining(RequestStartTraining event, EntityRef entity) {
-        startTraining(entity, new ResourceUrn(event.skill));
-    }
-
-    @ReceiveEvent
-    public void onRequestStopTraining(RequestStopTraining event, EntityRef entity) {
-        stopTraining(entity);
-    }
-
-    @Command(shortDescription = "Gives the skill to you", runOnServer = true,
-            requiredPermission = PermissionManager.CHEAT_PERMISSION)
-    public String giveEventualSkill(
-            @Sender EntityRef client,
-            @CommandParam("Skill Resource Urn") String skillPrefabName,
-            @CommandParam(value = "Level", required = false) Integer levelInput) {
-        int level = 1;
-        if (levelInput != null) {
-            level = levelInput;
-        }
-
-        EntityRef playerEntity = client.getComponent(ClientComponent.class).character;
-        ResourceUrn skillUrn = new ResourceUrn(skillPrefabName);
-        giveSkill(playerEntity, skillUrn, level);
-        EntityEventualSkillsComponent entityEventualSkillsComponent = playerEntity.getComponent(EntityEventualSkillsComponent.class);
-        if (entityEventualSkillsComponent.hasSkill(skillUrn, level)) {
-            return "Skill given";
-        } else {
-            return "Error: skill not given";
-        }
-    }
-
-    @Command(shortDescription = "Finish training the skill currently being trained", runOnServer = true,
-            requiredPermission = PermissionManager.CHEAT_PERMISSION)
-    public String finishTrainingEventualSkill(
-            @Sender EntityRef client) {
-        EntityRef playerEntity = client.getComponent(ClientComponent.class).character;
-        EntityEventualSkillsComponent entityEventualSkillsComponent = playerEntity.getComponent(EntityEventualSkillsComponent.class);
-        String currentSkillInTraining = entityEventualSkillsComponent.currentSkillInTraining;
-        if (currentSkillInTraining != null) {
-            completeTraining(playerEntity);
-            return currentSkillInTraining + " completed";
-        } else {
-            return "No skill currently being trained";
-        }
-    }
-
-    @ReceiveEvent
-    public void onSkillTrainedSendOwnerSkillTrainedEvent(SkillTrainedEvent event, EntityRef entityRef) {
-        entityRef.send(new SkillTrainedOwnerEvent(event.getSkillTrained(), event.getLevelTrained()));
-    }
-
-    @ReceiveEvent
-    public void onSkillGivingItemUsed(ActivateEvent event, EntityRef item, SkillGivingItemComponent skillGivingItemComponent) {
-        EntityEventualSkillsComponent skillsComponent = event.getInstigator().getComponent(EntityEventualSkillsComponent.class);
-        ResourceUrn skillUrn = new ResourceUrn(skillGivingItemComponent.skill);
-        int currentLevel = skillsComponent == null ? 0 : skillsComponent.getSkillLevel(skillUrn);
-        int level = skillGivingItemComponent.level != null ? Math.max(currentLevel, skillGivingItemComponent.level)
-                : currentLevel + 1;
-
-        if (eventualSkillsManager.getPrerequisiteSkillsNeeded(skillsComponent, skillUrn).size() == 0) {
-            giveSkill(event.getInstigator(), skillUrn, level);
-        } else {
-            event.consume();
-        }
     }
 }

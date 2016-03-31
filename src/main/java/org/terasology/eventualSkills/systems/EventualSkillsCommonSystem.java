@@ -30,8 +30,8 @@ import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.eventualSkills.components.EntityEventualSkillsComponent;
 import org.terasology.eventualSkills.components.EventualSkillDescriptionComponent;
 import org.terasology.eventualSkills.components.SkillGivingItemComponent;
-import org.terasology.eventualSkills.events.RequestStartTraining;
-import org.terasology.eventualSkills.events.RequestStopTraining;
+import org.terasology.eventualSkills.events.StartTrainingSkillRequestEvent;
+import org.terasology.eventualSkills.events.StopTrainingSkillRequestEvent;
 import org.terasology.logic.common.DisplayNameComponent;
 import org.terasology.logic.config.ModuleConfigManager;
 import org.terasology.logic.console.commandSystem.annotations.Command;
@@ -133,7 +133,7 @@ public class EventualSkillsCommonSystem extends BaseComponentSystem implements E
             @Sender EntityRef client,
             @CommandParam("Skill prefab name") String skillPrefabName) {
         EntityRef playerEntity = client.getComponent(ClientComponent.class).character;
-        playerEntity.send(new RequestStartTraining(new ResourceUrn(skillPrefabName)));
+        playerEntity.send(new StartTrainingSkillRequestEvent(new ResourceUrn(skillPrefabName)));
         return "Training started";
     }
 
@@ -142,7 +142,7 @@ public class EventualSkillsCommonSystem extends BaseComponentSystem implements E
     public String stopTrainingEventualSkill(
             @Sender EntityRef client) {
         EntityRef playerEntity = client.getComponent(ClientComponent.class).character;
-        playerEntity.send(new RequestStopTraining());
+        playerEntity.send(new StopTrainingSkillRequestEvent());
         return "Training stopped";
     }
 
