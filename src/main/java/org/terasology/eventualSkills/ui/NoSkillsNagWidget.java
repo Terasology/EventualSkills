@@ -17,7 +17,7 @@ package org.terasology.eventualSkills.ui;
 
 import com.google.common.base.Strings;
 import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.eventualSkills.components.EntityEventualSkillsComponent;
+import org.terasology.eventualSkills.components.EntitySkillsComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.registry.CoreRegistry;
 import org.terasology.rendering.nui.databinding.ReadOnlyBinding;
@@ -35,8 +35,8 @@ public class NoSkillsNagWidget extends CoreHudWidget {
                 @Override
                 public String get() {
                     EntityRef targetEntity = CoreRegistry.get(LocalPlayer.class).getCharacterEntity();
-                    EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
-                    if (targetSkills == null || targetSkills.learnedSkills.size() == 0) {
+                    EntitySkillsComponent skillsComponent = targetEntity.getComponent(EntitySkillsComponent.class);
+                    if (skillsComponent == null || skillsComponent.learnedSkills.size() == 0) {
                         return "You have no skills, press 'L' to start training";
                     }
                     return null;

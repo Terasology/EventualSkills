@@ -17,6 +17,7 @@ package org.terasology.eventualSkills.systems;
 
 import org.terasology.assets.ResourceUrn;
 import org.terasology.eventualSkills.components.EntityEventualSkillsComponent;
+import org.terasology.eventualSkills.components.EntitySkillsComponent;
 import org.terasology.eventualSkills.components.EventualSkillDescriptionComponent;
 
 import java.util.Map;
@@ -28,9 +29,9 @@ public interface EventualSkillsManager {
 
     Map<EventualSkillDescriptionComponent, Integer> getPrerequisiteSkills(ResourceUrn skillUrn);
 
-    Map<ResourceUrn, Integer> getPrerequisiteSkillsNeeded(EntityEventualSkillsComponent targetSkills, ResourceUrn skillUrn);
+    Map<ResourceUrn, Integer> getPrerequisiteSkillsNeeded(EntitySkillsComponent skillsComponent, EntityEventualSkillsComponent eventualSkillsComponent, ResourceUrn skillUrn);
 
     int skillPointsNeeded(int rank, int level);
 
-    int calculateCurrentTrainingSkillPoints(EntityEventualSkillsComponent skillComponent);
+    int calculateCurrentTrainingSkillPoints(EntityEventualSkillsComponent eventualSkillsComponent);
 }

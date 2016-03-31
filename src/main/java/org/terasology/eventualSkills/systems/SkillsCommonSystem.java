@@ -19,7 +19,7 @@ import org.terasology.assets.ResourceUrn;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterSystem;
-import org.terasology.eventualSkills.components.EntityEventualSkillsComponent;
+import org.terasology.eventualSkills.components.EntitySkillsComponent;
 import org.terasology.eventualSkills.events.GiveSkillEvent;
 import org.terasology.logic.console.commandSystem.annotations.Command;
 import org.terasology.logic.console.commandSystem.annotations.CommandParam;
@@ -43,8 +43,8 @@ public class SkillsCommonSystem extends BaseComponentSystem {
         EntityRef playerEntity = client.getComponent(ClientComponent.class).character;
         ResourceUrn skillUrn = new ResourceUrn(skillPrefabName);
         playerEntity.send(new GiveSkillEvent(skillUrn.toString(), level));
-        EntityEventualSkillsComponent entityEventualSkillsComponent = playerEntity.getComponent(EntityEventualSkillsComponent.class);
-        if (entityEventualSkillsComponent.getSkillLevel(skillUrn) == level) {
+        EntitySkillsComponent skillsComponent = playerEntity.getComponent(EntitySkillsComponent.class);
+        if (skillsComponent != null && skillsComponent.getSkillLevel(skillUrn) == level) {
             return "Skill given";
         } else {
             return "Error: skill not given";

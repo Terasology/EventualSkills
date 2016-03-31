@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 MovingBlocks
+ * Copyright 2016 MovingBlocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,27 @@
 package org.terasology.eventualSkills.components;
 
 import com.google.common.collect.Maps;
+import org.terasology.assets.ResourceUrn;
 import org.terasology.entitySystem.Component;
 import org.terasology.network.Replicate;
 
 import java.util.Map;
 
-public class EntityEventualSkillsComponent implements Component {
-    @Replicate
-    public String currentSkillInTraining;
-    @Replicate
-    public int currentSkillLevelInTraining;
-    @Replicate
-    public int currentSkillRankInTraining;
-    @Replicate
-    public int currentTrainingTargetSkillPoints;
-    @Replicate
-    public int currentTrainingCurrentSkillPoints;
-    @Replicate
-    public long trainingLastTimeComputedSkillPoints;
+public class EntitySkillsComponent implements Component {
 
-    // a map of the skill and how many skill points have already been acquired.  These must always be lowercased, otherwise chaos.
+    // a map of the skill and the level to which it has been learned.  These must always be lowercased, otherwise chaos.
     @Replicate
-    public Map<String, Integer> partiallyLearnedSkills = Maps.newHashMap();
+    public Map<String, Integer> learnedSkills = Maps.newHashMap();
+
+    public boolean hasSkill(ResourceUrn skillUrn, int level) {
+        return getSkillLevel(skillUrn) >= level;
+    }
+
+    public int getSkillLevel(ResourceUrn skillUrn) {
+        if (learnedSkills.containsKey(skillUrn.toString().toLowerCase())) {
+            return learnedSkills.get(skillUrn.toString().toLowerCase());
+        } else {
+            return 0;
+        }
+    }
 }

@@ -18,6 +18,7 @@ package org.terasology.eventualSkills.ui;
 import org.terasology.assets.ResourceUrn;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.eventualSkills.components.EntityEventualSkillsComponent;
+import org.terasology.eventualSkills.components.EntitySkillsComponent;
 import org.terasology.eventualSkills.components.EventualSkillDescriptionComponent;
 import org.terasology.eventualSkills.events.StartTrainingSkillRequestEvent;
 import org.terasology.eventualSkills.events.StopTrainingSkillRequestEvent;
@@ -108,9 +109,9 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                 public String get() {
                     if (selectedSkill != null) {
                         int currentLevel = 0;
-                        EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
-                        if (targetSkills != null) {
-                            currentLevel = targetSkills.getSkillLevel(selectedSkillUrn);
+                        EntitySkillsComponent skillsComponent = targetEntity.getComponent(EntitySkillsComponent.class);
+                        if (skillsComponent != null) {
+                            currentLevel = skillsComponent.getSkillLevel(selectedSkillUrn);
                         }
                         return selectedSkill.name + " (" + selectedSkill.shortName + ") level " + currentLevel;
                     } else {
@@ -137,24 +138,25 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
             selectedSkillProgress.bindText(new ReadOnlyBinding<String>() {
                 @Override
                 public String get() {
-                    EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
-                    if (targetSkills != null && selectedSkillUrn != null) {
-                        if (targetSkills.currentSkillInTraining != null && selectedSkillUrn.equals(new ResourceUrn(targetSkills.currentSkillInTraining))) {
+                    EntityEventualSkillsComponent eventualSkillsComponent = targetEntity.getComponent(EntityEventualSkillsComponent.class);
+                    EntitySkillsComponent skillsComponent = targetEntity.getComponent(EntitySkillsComponent.class);
+                    if (skillsComponent != null && eventualSkillsComponent != null && selectedSkillUrn != null) {
+                        if (eventualSkillsComponent.currentSkillInTraining != null && selectedSkillUrn.equals(new ResourceUrn(eventualSkillsComponent.currentSkillInTraining))) {
                             EventualSkillsManager skillsManager = eventualSkillsManager;
                             int totalSkillPoints = skillsManager.skillPointsNeeded(
-                                    targetSkills.currentSkillRankInTraining,
-                                    targetSkills.getSkillLevel(new ResourceUrn(targetSkills.currentSkillInTraining)) + 1);
-                            int currentSkillPoints = skillsManager.calculateCurrentTrainingSkillPoints(targetSkills);
-                            return "Level " + targetSkills.currentSkillLevelInTraining + " " + currentSkillPoints + "/" + totalSkillPoints;
+                                    eventualSkillsComponent.currentSkillRankInTraining,
+                                    skillsComponent.getSkillLevel(new ResourceUrn(eventualSkillsComponent.currentSkillInTraining)) + 1);
+                            int currentSkillPoints = skillsManager.calculateCurrentTrainingSkillPoints(eventualSkillsComponent);
+                            return "Level " + eventualSkillsComponent.currentSkillLevelInTraining + " " + currentSkillPoints + "/" + totalSkillPoints;
                         } else {
-                            int nextSkillLevel = targetSkills.getSkillLevel(selectedSkillUrn) + 1;
+                            int nextSkillLevel = skillsComponent.getSkillLevel(selectedSkillUrn) + 1;
                             EventualSkillsManager skillsManager = eventualSkillsManager;
                             int totalSkillPoints = skillsManager.skillPointsNeeded(
                                     skillsManager.getSkill(selectedSkillUrn).rank,
                                     nextSkillLevel);
                             int currentSkillPoints = 0;
-                            if (targetSkills.partiallyLearnedSkills.containsKey(selectedSkillUrn.toString().toLowerCase())) {
-                                currentSkillPoints = targetSkills.partiallyLearnedSkills.get(selectedSkillUrn.toString().toLowerCase());
+                            if (eventualSkillsComponent.partiallyLearnedSkills.containsKey(selectedSkillUrn.toString().toLowerCase())) {
+                                currentSkillPoints = eventualSkillsComponent.partiallyLearnedSkills.get(selectedSkillUrn.toString().toLowerCase());
                             }
                             return "Level " + nextSkillLevel + " " + currentSkillPoints + "/" + totalSkillPoints;
                         }
@@ -171,11 +173,12 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                 @Override
                 public String get() {
                     if (selectedSkillUrn != null) {
-                        EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
+                        EntityEventualSkillsComponent eventualSkillsComponent = targetEntity.getComponent(EntityEventualSkillsComponent.class);
+                        EntitySkillsComponent skillsComponent = targetEntity.getComponent(EntitySkillsComponent.class);
                         EventualSkillsManager skillsManager = eventualSkillsManager;
 
                         String result = "";
-                        Map<ResourceUrn, Integer> prerequisiteSkillsNeeded = skillsManager.getPrerequisiteSkillsNeeded(targetSkills, selectedSkillUrn);
+                        Map<ResourceUrn, Integer> prerequisiteSkillsNeeded = skillsManager.getPrerequisiteSkillsNeeded(skillsComponent, eventualSkillsComponent, selectedSkillUrn);
                         for (Map.Entry<ResourceUrn, Integer> prereqSkill : prerequisiteSkillsNeeded.entrySet()) {
                             result += skillsManager.getSkill(prereqSkill.getKey()).name + " " + prereqSkill.getValue() + "\r\n";
                         }
@@ -213,16 +216,17 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
             selectedSkillAction.bindEnabled(new ReadOnlyBinding<Boolean>() {
                 @Override
                 public Boolean get() {
-                    EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
+                    EntityEventualSkillsComponent eventualSkillsComponent = targetEntity.getComponent(EntityEventualSkillsComponent.class);
+                    EntitySkillsComponent skillsComponent = targetEntity.getComponent(EntitySkillsComponent.class);
                     EventualSkillsManager skillsManager = eventualSkillsManager;
 
                     if (selectedSkill != null) {
-                        if (targetSkills != null) {
-                            Map<ResourceUrn, Integer> prerequisiteSkillsNeeded = skillsManager.getPrerequisiteSkillsNeeded(targetSkills, selectedSkillUrn);
+                        if (eventualSkillsComponent != null) {
+                            Map<ResourceUrn, Integer> prerequisiteSkillsNeeded = skillsManager.getPrerequisiteSkillsNeeded(skillsComponent, eventualSkillsComponent, selectedSkillUrn);
                             return prerequisiteSkillsNeeded.size() == 0;
                         } else {
                             // allow starting training when a new player is made
-                            return skillsManager.getPrerequisiteSkillsNeeded(new EntityEventualSkillsComponent(), selectedSkillUrn).size() == 0;
+                            return skillsManager.getPrerequisiteSkillsNeeded(new EntitySkillsComponent(), new EntityEventualSkillsComponent(), selectedSkillUrn).size() == 0;
                         }
                     } else {
                         return false;

@@ -23,27 +23,22 @@ import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
-import org.terasology.eventualSkills.components.EntityEventualSkillsComponent;
+import org.terasology.eventualSkills.components.EntitySkillsComponent;
 import org.terasology.eventualSkills.components.SkillGivingItemComponent;
 import org.terasology.eventualSkills.events.GiveSkillEvent;
 import org.terasology.eventualSkills.events.SkillTrainedEvent;
 import org.terasology.eventualSkills.events.SkillTrainedOwnerEvent;
 import org.terasology.logic.common.ActivateEvent;
-import org.terasology.registry.In;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class SkillsAuthoritySystem extends BaseComponentSystem {
     private static final Logger logger = LoggerFactory.getLogger(SkillsAuthoritySystem.class);
 
-    @In
-    EventualSkillsManager eventualSkillsManager;
-
     @ReceiveEvent
     public void giveSkillToEntity(GiveSkillEvent event, EntityRef entityRef) {
         if (event.getSkill() != null && entityRef != null) {
             String skill = event.getSkill().toString().toLowerCase();
-            EntityEventualSkillsComponent skillComponent = getEntityEventualSkillComponent(entityRef);
-            skillComponent.partiallyLearnedSkills.remove(skill);
+            EntitySkillsComponent skillComponent = getEntitySkillsComponent(entityRef);
             skillComponent.learnedSkills.put(skill, event.getLevel());
             entityRef.addOrSaveComponent(skillComponent);
             entityRef.send(new SkillTrainedEvent(event.getSkill(), event.getLevel()));
@@ -58,25 +53,20 @@ public class SkillsAuthoritySystem extends BaseComponentSystem {
 
     @ReceiveEvent
     public void onSkillGivingItemUsed(ActivateEvent event, EntityRef item, SkillGivingItemComponent skillGivingItemComponent) {
-        EntityEventualSkillsComponent skillsComponent = event.getInstigator().getComponent(EntityEventualSkillsComponent.class);
+        EntitySkillsComponent skillsComponent = getEntitySkillsComponent(event.getInstigator());
         ResourceUrn skillUrn = new ResourceUrn(skillGivingItemComponent.skill);
         int currentLevel = skillsComponent == null ? 0 : skillsComponent.getSkillLevel(skillUrn);
         int level = skillGivingItemComponent.level != null ? Math.max(currentLevel, skillGivingItemComponent.level)
                 : currentLevel + 1;
 
-        if (eventualSkillsManager.getPrerequisiteSkillsNeeded(skillsComponent, skillUrn).size() == 0) {
-            event.getInstigator().send(new GiveSkillEvent(skillUrn, level));
-        } else {
-            event.consume();
-        }
+        event.getInstigator().send(new GiveSkillEvent(skillUrn, level));
     }
 
-
-    private EntityEventualSkillsComponent getEntityEventualSkillComponent(EntityRef entityRef) {
-        EntityEventualSkillsComponent entityEventualSkillsComponent = entityRef.getComponent(EntityEventualSkillsComponent.class);
-        if (entityEventualSkillsComponent == null) {
-            entityEventualSkillsComponent = new EntityEventualSkillsComponent();
+    private EntitySkillsComponent getEntitySkillsComponent(EntityRef entityRef) {
+        EntitySkillsComponent entitySkillsComponent = entityRef.getComponent(EntitySkillsComponent.class);
+        if (entitySkillsComponent == null) {
+            entitySkillsComponent = new EntitySkillsComponent();
         }
-        return entityEventualSkillsComponent;
+        return entitySkillsComponent;
     }
 }

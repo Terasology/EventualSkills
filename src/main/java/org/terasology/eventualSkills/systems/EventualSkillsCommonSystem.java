@@ -28,6 +28,7 @@ import org.terasology.entitySystem.prefab.PrefabManager;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.eventualSkills.components.EntityEventualSkillsComponent;
+import org.terasology.eventualSkills.components.EntitySkillsComponent;
 import org.terasology.eventualSkills.components.EventualSkillDescriptionComponent;
 import org.terasology.eventualSkills.components.SkillGivingItemComponent;
 import org.terasology.eventualSkills.events.StartTrainingSkillRequestEvent;
@@ -95,12 +96,12 @@ public class EventualSkillsCommonSystem extends BaseComponentSystem implements E
     }
 
     @Override
-    public Map<ResourceUrn, Integer> getPrerequisiteSkillsNeeded(EntityEventualSkillsComponent targetSkills, ResourceUrn skillUrn) {
+    public Map<ResourceUrn, Integer> getPrerequisiteSkillsNeeded(EntitySkillsComponent skillsComponent, EntityEventualSkillsComponent eventualSkillsComponent, ResourceUrn skillUrn) {
         EventualSkillDescriptionComponent skillDescription = getSkill(skillUrn);
         Map<ResourceUrn, Integer> prerequisiteSkillsNeeded = new HashMap<>();
         for (Map.Entry<String, Integer> prereqSkill : skillDescription.prerequisiteSkills.entrySet()) {
             ResourceUrn prereqSkillUrn = new ResourceUrn(prereqSkill.getKey());
-            if (targetSkills == null || !targetSkills.hasSkill(prereqSkillUrn, prereqSkill.getValue())) {
+            if (eventualSkillsComponent == null || !skillsComponent.hasSkill(prereqSkillUrn, prereqSkill.getValue())) {
                 prerequisiteSkillsNeeded.put(prereqSkillUrn, prereqSkill.getValue());
             }
         }
@@ -108,11 +109,11 @@ public class EventualSkillsCommonSystem extends BaseComponentSystem implements E
     }
 
     @Override
-    public int calculateCurrentTrainingSkillPoints(EntityEventualSkillsComponent skillComponent) {
+    public int calculateCurrentTrainingSkillPoints(EntityEventualSkillsComponent eventualSkillsComponent) {
         long currentTime = time.getGameTimeInMs();
-        long lastComputedTime = skillComponent.trainingLastTimeComputedSkillPoints;
+        long lastComputedTime = eventualSkillsComponent.trainingLastTimeComputedSkillPoints;
         int newSkillPoints = (int) ((double) (currentTime - lastComputedTime) * EventualSkillAuthoritySystem.SKILL_POINTS_PER_MILLISECOND);
-        return newSkillPoints + skillComponent.currentTrainingCurrentSkillPoints;
+        return newSkillPoints + eventualSkillsComponent.currentTrainingCurrentSkillPoints;
     }
 
     @Override
