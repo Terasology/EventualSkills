@@ -57,7 +57,7 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
 
 
     @Override
-    protected void initialise() {
+    public void initialise() {
         allSkills = new ArrayList<>();
         for (ResourceUrn skill : eventualSkillsManager.listSkills()) {
             allSkills.add(skill);
