@@ -28,7 +28,7 @@ public class NoSkillsNagWidget extends CoreHudWidget {
     UILabel message;
 
     @Override
-    protected void initialise() {
+    public void initialise() {
         message = find("message", UILabel.class);
         if (message != null) {
             message.bindText(new ReadOnlyBinding<String>() {
