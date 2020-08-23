@@ -16,17 +16,17 @@
 package org.terasology.eventualSkills.ui;
 
 import com.google.common.collect.Lists;
+import org.joml.Vector2i;
 import org.terasology.input.MouseInput;
-import org.terasology.math.geom.Vector2i;
-import org.terasology.rendering.nui.BaseInteractionListener;
-import org.terasology.rendering.nui.Canvas;
-import org.terasology.rendering.nui.CoreLayout;
-import org.terasology.rendering.nui.InteractionListener;
-import org.terasology.rendering.nui.LayoutHint;
-import org.terasology.rendering.nui.UIWidget;
-import org.terasology.rendering.nui.events.NUIMouseClickEvent;
-import org.terasology.rendering.nui.events.NUIMouseReleaseEvent;
-import org.terasology.rendering.nui.widgets.ActivateEventListener;
+import org.terasology.nui.BaseInteractionListener;
+import org.terasology.nui.Canvas;
+import org.terasology.nui.CoreLayout;
+import org.terasology.nui.InteractionListener;
+import org.terasology.nui.LayoutHint;
+import org.terasology.nui.UIWidget;
+import org.terasology.nui.events.NUIMouseClickEvent;
+import org.terasology.nui.events.NUIMouseReleaseEvent;
+import org.terasology.nui.widgets.ActivateEventListener;
 
 import java.util.Iterator;
 import java.util.List;
@@ -62,7 +62,7 @@ public class OverlapLayout extends CoreLayout<LayoutHint> {
     }
 
     @Override
-    public Vector2i getPreferredContentSize(Canvas canvas, Vector2i sizeHint) {
+    public org.joml.Vector2i getPreferredContentSize(Canvas canvas, Vector2i sizeHint) {
         int maxX = 0;
         int maxY = 0;
         for (UIWidget uiWidget : widgets) {

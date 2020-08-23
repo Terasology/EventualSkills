@@ -19,10 +19,10 @@ import com.google.common.base.Strings;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.eventualSkills.components.EntitySkillsComponent;
 import org.terasology.logic.players.LocalPlayer;
+import org.terasology.nui.databinding.ReadOnlyBinding;
+import org.terasology.nui.widgets.UILabel;
 import org.terasology.registry.CoreRegistry;
-import org.terasology.rendering.nui.databinding.ReadOnlyBinding;
 import org.terasology.rendering.nui.layers.hud.CoreHudWidget;
-import org.terasology.rendering.nui.widgets.UILabel;
 
 public class NoSkillsNagWidget extends CoreHudWidget {
     UILabel message;

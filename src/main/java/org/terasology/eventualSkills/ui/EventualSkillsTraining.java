@@ -23,17 +23,17 @@ import org.terasology.eventualSkills.components.EventualSkillDescriptionComponen
 import org.terasology.eventualSkills.events.StartTrainingSkillRequestEvent;
 import org.terasology.eventualSkills.events.StopTrainingSkillRequestEvent;
 import org.terasology.eventualSkills.systems.EventualSkillsManager;
+import org.terasology.nui.Canvas;
+import org.terasology.nui.UIWidget;
+import org.terasology.nui.databinding.Binding;
+import org.terasology.nui.databinding.ReadOnlyBinding;
+import org.terasology.nui.itemRendering.StringTextRenderer;
+import org.terasology.nui.widgets.ActivateEventListener;
+import org.terasology.nui.widgets.UIButton;
+import org.terasology.nui.widgets.UILabel;
+import org.terasology.nui.widgets.UIList;
 import org.terasology.registry.In;
 import org.terasology.rendering.nui.BaseInteractionScreen;
-import org.terasology.rendering.nui.Canvas;
-import org.terasology.rendering.nui.UIWidget;
-import org.terasology.rendering.nui.databinding.Binding;
-import org.terasology.rendering.nui.databinding.ReadOnlyBinding;
-import org.terasology.rendering.nui.itemRendering.StringTextRenderer;
-import org.terasology.rendering.nui.widgets.ActivateEventListener;
-import org.terasology.rendering.nui.widgets.UIButton;
-import org.terasology.rendering.nui.widgets.UILabel;
-import org.terasology.rendering.nui.widgets.UIList;
 
 import java.util.ArrayList;
 import java.util.List;

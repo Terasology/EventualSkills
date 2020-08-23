@@ -15,14 +15,14 @@
  */
 package org.terasology.eventualSkills.ui;
 
+import org.terasology.nui.UIWidget;
+import org.terasology.nui.widgets.UIImage;
+import org.terasology.nui.widgets.UILabel;
 import org.terasology.utilities.Assets;
 import org.terasology.assets.ResourceUrn;
 import org.terasology.eventualSkills.components.EventualSkillDescriptionComponent;
 import org.terasology.eventualSkills.systems.EventualSkillsManager;
 import org.terasology.registry.CoreRegistry;
-import org.terasology.rendering.nui.UIWidget;
-import org.terasology.rendering.nui.widgets.UIImage;
-import org.terasology.rendering.nui.widgets.UILabel;
 
 public final class EventualSkillsUIUtil {
     public static UIWidget createEventualSkillsIcon(ResourceUrn skillUrn, int level) {
