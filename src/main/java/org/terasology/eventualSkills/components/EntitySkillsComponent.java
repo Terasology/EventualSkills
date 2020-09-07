@@ -16,8 +16,8 @@
 package org.terasology.eventualSkills.components;
 
 import com.google.common.collect.Maps;
-import org.terasology.assets.ResourceUrn;
 import org.terasology.entitySystem.Component;
+import org.terasology.gestalt.assets.ResourceUrn;
 import org.terasology.network.Replicate;
 
 import java.util.Map;

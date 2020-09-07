@@ -18,7 +18,6 @@ package org.terasology.eventualSkills.systems;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.assets.ResourceUrn;
 import org.terasology.engine.Time;
 import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.entitySystem.entity.EntityManager;
@@ -33,6 +32,7 @@ import org.terasology.eventualSkills.components.EventualSkillDescriptionComponen
 import org.terasology.eventualSkills.components.SkillGivingItemComponent;
 import org.terasology.eventualSkills.events.StartTrainingSkillRequestEvent;
 import org.terasology.eventualSkills.events.StopTrainingSkillRequestEvent;
+import org.terasology.gestalt.assets.ResourceUrn;
 import org.terasology.logic.common.DisplayNameComponent;
 import org.terasology.logic.config.ModuleConfigManager;
 import org.terasology.logic.console.commandSystem.annotations.Command;

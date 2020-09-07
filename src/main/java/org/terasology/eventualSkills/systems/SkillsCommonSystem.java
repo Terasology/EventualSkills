@@ -15,12 +15,12 @@
  */
 package org.terasology.eventualSkills.systems;
 
-import org.terasology.assets.ResourceUrn;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.eventualSkills.components.EntitySkillsComponent;
 import org.terasology.eventualSkills.events.GiveSkillEvent;
+import org.terasology.gestalt.assets.ResourceUrn;
 import org.terasology.logic.console.commandSystem.annotations.Command;
 import org.terasology.logic.console.commandSystem.annotations.CommandParam;
 import org.terasology.logic.console.commandSystem.annotations.Sender;

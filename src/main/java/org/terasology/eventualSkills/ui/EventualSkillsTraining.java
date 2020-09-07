@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.eventualSkills.ui;
 
-import org.terasology.assets.ResourceUrn;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.eventualSkills.components.EntityEventualSkillsComponent;
 import org.terasology.eventualSkills.components.EntitySkillsComponent;
@@ -10,6 +9,7 @@ import org.terasology.eventualSkills.components.EventualSkillDescriptionComponen
 import org.terasology.eventualSkills.events.StartTrainingSkillRequestEvent;
 import org.terasology.eventualSkills.events.StopTrainingSkillRequestEvent;
 import org.terasology.eventualSkills.systems.EventualSkillsManager;
+import org.terasology.gestalt.assets.ResourceUrn;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.UIWidget;
 import org.terasology.nui.databinding.Binding;
