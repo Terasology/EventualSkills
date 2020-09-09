@@ -1,31 +1,29 @@
-/*
- * Copyright 2016 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.eventualSkills.systems;
 
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.engine.Time;
-import org.terasology.entitySystem.entity.EntityBuilder;
-import org.terasology.entitySystem.entity.EntityManager;
-import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.entitySystem.prefab.Prefab;
-import org.terasology.entitySystem.prefab.PrefabManager;
-import org.terasology.entitySystem.systems.BaseComponentSystem;
-import org.terasology.entitySystem.systems.RegisterSystem;
+import org.terasology.engine.core.Time;
+import org.terasology.engine.entitySystem.entity.EntityBuilder;
+import org.terasology.engine.entitySystem.entity.EntityManager;
+import org.terasology.engine.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.prefab.Prefab;
+import org.terasology.engine.entitySystem.prefab.PrefabManager;
+import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
+import org.terasology.engine.entitySystem.systems.RegisterSystem;
+import org.terasology.engine.logic.common.DisplayNameComponent;
+import org.terasology.engine.logic.config.ModuleConfigManager;
+import org.terasology.engine.logic.console.commandSystem.annotations.Command;
+import org.terasology.engine.logic.console.commandSystem.annotations.CommandParam;
+import org.terasology.engine.logic.console.commandSystem.annotations.Sender;
+import org.terasology.engine.logic.inventory.events.GiveItemEvent;
+import org.terasology.engine.logic.permission.PermissionManager;
+import org.terasology.engine.network.ClientComponent;
+import org.terasology.engine.registry.In;
+import org.terasology.engine.registry.Share;
+import org.terasology.engine.utilities.Assets;
 import org.terasology.eventualSkills.components.EntityEventualSkillsComponent;
 import org.terasology.eventualSkills.components.EntitySkillsComponent;
 import org.terasology.eventualSkills.components.EventualSkillDescriptionComponent;
@@ -33,17 +31,6 @@ import org.terasology.eventualSkills.components.SkillGivingItemComponent;
 import org.terasology.eventualSkills.events.StartTrainingSkillRequestEvent;
 import org.terasology.eventualSkills.events.StopTrainingSkillRequestEvent;
 import org.terasology.gestalt.assets.ResourceUrn;
-import org.terasology.logic.common.DisplayNameComponent;
-import org.terasology.logic.config.ModuleConfigManager;
-import org.terasology.logic.console.commandSystem.annotations.Command;
-import org.terasology.logic.console.commandSystem.annotations.CommandParam;
-import org.terasology.logic.console.commandSystem.annotations.Sender;
-import org.terasology.logic.inventory.events.GiveItemEvent;
-import org.terasology.logic.permission.PermissionManager;
-import org.terasology.network.ClientComponent;
-import org.terasology.registry.In;
-import org.terasology.registry.Share;
-import org.terasology.utilities.Assets;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,9 +41,8 @@ import java.util.Optional;
 @RegisterSystem
 @Share(EventualSkillsManager.class)
 public class EventualSkillsCommonSystem extends BaseComponentSystem implements EventualSkillsManager {
-    private static final Logger logger = LoggerFactory.getLogger(EventualSkillsCommonSystem.class);
     public static final ResourceUrn IDLE_SKILL_URN = new ResourceUrn("EventualSkills:IdleSkill");
-
+    private static final Logger logger = LoggerFactory.getLogger(EventualSkillsCommonSystem.class);
     @In
     PrefabManager prefabManager;
     @In
@@ -96,7 +82,8 @@ public class EventualSkillsCommonSystem extends BaseComponentSystem implements E
     }
 
     @Override
-    public Map<ResourceUrn, Integer> getPrerequisiteSkillsNeeded(EntitySkillsComponent skillsComponent, EntityEventualSkillsComponent eventualSkillsComponent, ResourceUrn skillUrn) {
+    public Map<ResourceUrn, Integer> getPrerequisiteSkillsNeeded(EntitySkillsComponent skillsComponent,
+                                                                 EntityEventualSkillsComponent eventualSkillsComponent, ResourceUrn skillUrn) {
         EventualSkillDescriptionComponent skillDescription = getSkill(skillUrn);
         Map<ResourceUrn, Integer> prerequisiteSkillsNeeded = new HashMap<>();
         for (Map.Entry<String, Integer> prereqSkill : skillDescription.prerequisiteSkills.entrySet()) {
@@ -112,7 +99,8 @@ public class EventualSkillsCommonSystem extends BaseComponentSystem implements E
     public int calculateCurrentTrainingSkillPoints(EntityEventualSkillsComponent eventualSkillsComponent) {
         long currentTime = time.getGameTimeInMs();
         long lastComputedTime = eventualSkillsComponent.trainingLastTimeComputedSkillPoints;
-        int newSkillPoints = (int) ((double) (currentTime - lastComputedTime) * EventualSkillAuthoritySystem.SKILL_POINTS_PER_MILLISECOND);
+        int newSkillPoints =
+                (int) ((double) (currentTime - lastComputedTime) * EventualSkillAuthoritySystem.SKILL_POINTS_PER_MILLISECOND);
         return newSkillPoints + eventualSkillsComponent.currentTrainingCurrentSkillPoints;
     }
 
@@ -122,7 +110,8 @@ public class EventualSkillsCommonSystem extends BaseComponentSystem implements E
             return 0;
         }
 
-        float skillpointMultiplier = moduleConfigManager.getFloatVariable("EventualSkills", "skillpointMultiplier", 1.0f);
+        float skillpointMultiplier = moduleConfigManager.getFloatVariable("EventualSkills", "skillpointMultiplier",
+                1.0f);
         float skillpointScaling = moduleConfigManager.getFloatVariable("EventualSkills", "skillpointScaling", 1.0f);
 
         return (int) (skillpointMultiplier * rank * 250.0 * Math.pow(5.66, (level - 1) * skillpointScaling));
@@ -154,7 +143,8 @@ public class EventualSkillsCommonSystem extends BaseComponentSystem implements E
         EntityRef playerEntity = client.getComponent(ClientComponent.class).character;
         EntityEventualSkillsComponent skillsComponent = playerEntity.getComponent(EntityEventualSkillsComponent.class);
         if (skillsComponent != null && skillsComponent.currentSkillInTraining != null) {
-            EventualSkillDescriptionComponent skillDescription = getSkill(new ResourceUrn(skillsComponent.currentSkillInTraining));
+            EventualSkillDescriptionComponent skillDescription =
+                    getSkill(new ResourceUrn(skillsComponent.currentSkillInTraining));
             return "Training: " + skillDescription.name + " level " + skillsComponent.currentSkillLevelInTraining + " "
                     + calculateCurrentTrainingSkillPoints(skillsComponent) + "/" + skillsComponent.currentTrainingTargetSkillPoints;
         }
@@ -176,18 +166,19 @@ public class EventualSkillsCommonSystem extends BaseComponentSystem implements E
         itemBuilder.addComponent(skillGivingItemComponent);
 
         EventualSkillDescriptionComponent eventualSkillDescriptionComponent = getSkill(skillUrn);
-        if( eventualSkillDescriptionComponent == null) {
+        if (eventualSkillDescriptionComponent == null) {
             return "Skill not found";
         }
         DisplayNameComponent displayNameComponent = new DisplayNameComponent();
-        displayNameComponent.name = eventualSkillDescriptionComponent.name + " " + (level == null ? "+1" : level.toString()) + " skill book";
+        displayNameComponent.name = eventualSkillDescriptionComponent.name + " " + (level == null ? "+1" :
+                level.toString()) + " skill book";
         itemBuilder.addComponent(displayNameComponent);
 
         EntityRef item = itemBuilder.build();
         EntityRef playerEntity = client.getComponent(ClientComponent.class).character;
         GiveItemEvent giveItemEvent = new GiveItemEvent(playerEntity);
         item.send(giveItemEvent);
-        if( !giveItemEvent.isHandled()) {
+        if (!giveItemEvent.isHandled()) {
             item.destroy();
         }
         return "You received a " + skill + " skill book";

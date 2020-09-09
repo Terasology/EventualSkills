@@ -3,13 +3,13 @@
 package org.terasology.eventualSkills.ui;
 
 import com.google.common.base.Strings;
-import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.entity.EntityRef;
+import org.terasology.engine.logic.players.LocalPlayer;
+import org.terasology.engine.registry.CoreRegistry;
+import org.terasology.engine.rendering.nui.layers.hud.CoreHudWidget;
 import org.terasology.eventualSkills.components.EntitySkillsComponent;
-import org.terasology.logic.players.LocalPlayer;
 import org.terasology.nui.databinding.ReadOnlyBinding;
 import org.terasology.nui.widgets.UILabel;
-import org.terasology.registry.CoreRegistry;
-import org.terasology.rendering.nui.layers.hud.CoreHudWidget;
 
 public class NoSkillsNagWidget extends CoreHudWidget {
     UILabel message;

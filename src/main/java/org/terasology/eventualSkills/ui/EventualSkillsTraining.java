@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.eventualSkills.ui;
 
-import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.entity.EntityRef;
+import org.terasology.engine.registry.In;
+import org.terasology.engine.rendering.nui.BaseInteractionScreen;
 import org.terasology.eventualSkills.components.EntityEventualSkillsComponent;
 import org.terasology.eventualSkills.components.EntitySkillsComponent;
 import org.terasology.eventualSkills.components.EventualSkillDescriptionComponent;
@@ -19,8 +21,6 @@ import org.terasology.nui.widgets.ActivateEventListener;
 import org.terasology.nui.widgets.UIButton;
 import org.terasology.nui.widgets.UILabel;
 import org.terasology.nui.widgets.UIList;
-import org.terasology.registry.In;
-import org.terasology.rendering.nui.BaseInteractionScreen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +78,8 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
 
                 @Override
                 public void draw(ResourceUrn value, Canvas canvas) {
-                    EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
+                    EntityEventualSkillsComponent targetSkills =
+                            targetEntity.getComponent(EntityEventualSkillsComponent.class);
                     if (targetSkills != null) {
                         if (targetSkills.currentSkillInTraining != null && value.equals(new ResourceUrn(targetSkills.currentSkillInTraining))) {
                             canvas.setMode("training");
@@ -125,7 +126,8 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
             selectedSkillProgress.bindText(new ReadOnlyBinding<String>() {
                 @Override
                 public String get() {
-                    EntityEventualSkillsComponent eventualSkillsComponent = targetEntity.getComponent(EntityEventualSkillsComponent.class);
+                    EntityEventualSkillsComponent eventualSkillsComponent =
+                            targetEntity.getComponent(EntityEventualSkillsComponent.class);
                     EntitySkillsComponent skillsComponent = targetEntity.getComponent(EntitySkillsComponent.class);
                     if (skillsComponent != null && eventualSkillsComponent != null && selectedSkillUrn != null) {
                         if (eventualSkillsComponent.currentSkillInTraining != null && selectedSkillUrn.equals(new ResourceUrn(eventualSkillsComponent.currentSkillInTraining))) {
@@ -133,7 +135,8 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                             int totalSkillPoints = skillsManager.skillPointsNeeded(
                                     eventualSkillsComponent.currentSkillRankInTraining,
                                     skillsComponent.getSkillLevel(new ResourceUrn(eventualSkillsComponent.currentSkillInTraining)) + 1);
-                            int currentSkillPoints = skillsManager.calculateCurrentTrainingSkillPoints(eventualSkillsComponent);
+                            int currentSkillPoints =
+                                    skillsManager.calculateCurrentTrainingSkillPoints(eventualSkillsComponent);
                             return "Level " + eventualSkillsComponent.currentSkillLevelInTraining + " " + currentSkillPoints + "/" + totalSkillPoints;
                         } else {
                             int nextSkillLevel = skillsComponent.getSkillLevel(selectedSkillUrn) + 1;
@@ -143,7 +146,8 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                                     nextSkillLevel);
                             int currentSkillPoints = 0;
                             if (eventualSkillsComponent.partiallyLearnedSkills.containsKey(selectedSkillUrn.toString().toLowerCase())) {
-                                currentSkillPoints = eventualSkillsComponent.partiallyLearnedSkills.get(selectedSkillUrn.toString().toLowerCase());
+                                currentSkillPoints =
+                                        eventualSkillsComponent.partiallyLearnedSkills.get(selectedSkillUrn.toString().toLowerCase());
                             }
                             return "Level " + nextSkillLevel + " " + currentSkillPoints + "/" + totalSkillPoints;
                         }
@@ -160,12 +164,15 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                 @Override
                 public String get() {
                     if (selectedSkillUrn != null) {
-                        EntityEventualSkillsComponent eventualSkillsComponent = targetEntity.getComponent(EntityEventualSkillsComponent.class);
+                        EntityEventualSkillsComponent eventualSkillsComponent =
+                                targetEntity.getComponent(EntityEventualSkillsComponent.class);
                         EntitySkillsComponent skillsComponent = targetEntity.getComponent(EntitySkillsComponent.class);
                         EventualSkillsManager skillsManager = eventualSkillsManager;
 
                         String result = "";
-                        Map<ResourceUrn, Integer> prerequisiteSkillsNeeded = skillsManager.getPrerequisiteSkillsNeeded(skillsComponent, eventualSkillsComponent, selectedSkillUrn);
+                        Map<ResourceUrn, Integer> prerequisiteSkillsNeeded =
+                                skillsManager.getPrerequisiteSkillsNeeded(skillsComponent, eventualSkillsComponent,
+                                        selectedSkillUrn);
                         for (Map.Entry<ResourceUrn, Integer> prereqSkill : prerequisiteSkillsNeeded.entrySet()) {
                             result += skillsManager.getSkill(prereqSkill.getKey()).name + " " + prereqSkill.getValue() + "\r\n";
                         }
@@ -184,7 +191,8 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                 @Override
                 public String get() {
                     if (selectedSkillUrn != null) {
-                        EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
+                        EntityEventualSkillsComponent targetSkills =
+                                targetEntity.getComponent(EntityEventualSkillsComponent.class);
                         if (targetSkills == null || targetSkills.currentSkillInTraining == null || !selectedSkillUrn.equals(new ResourceUrn(targetSkills.currentSkillInTraining))) {
                             return "Start Training";
                         } else {
@@ -203,17 +211,21 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
             selectedSkillAction.bindEnabled(new ReadOnlyBinding<Boolean>() {
                 @Override
                 public Boolean get() {
-                    EntityEventualSkillsComponent eventualSkillsComponent = targetEntity.getComponent(EntityEventualSkillsComponent.class);
+                    EntityEventualSkillsComponent eventualSkillsComponent =
+                            targetEntity.getComponent(EntityEventualSkillsComponent.class);
                     EntitySkillsComponent skillsComponent = targetEntity.getComponent(EntitySkillsComponent.class);
                     EventualSkillsManager skillsManager = eventualSkillsManager;
 
                     if (selectedSkill != null) {
                         if (eventualSkillsComponent != null) {
-                            Map<ResourceUrn, Integer> prerequisiteSkillsNeeded = skillsManager.getPrerequisiteSkillsNeeded(skillsComponent, eventualSkillsComponent, selectedSkillUrn);
+                            Map<ResourceUrn, Integer> prerequisiteSkillsNeeded =
+                                    skillsManager.getPrerequisiteSkillsNeeded(skillsComponent,
+                                            eventualSkillsComponent, selectedSkillUrn);
                             return prerequisiteSkillsNeeded.size() == 0;
                         } else {
                             // allow starting training when a new player is made
-                            return skillsManager.getPrerequisiteSkillsNeeded(new EntitySkillsComponent(), new EntityEventualSkillsComponent(), selectedSkillUrn).size() == 0;
+                            return skillsManager.getPrerequisiteSkillsNeeded(new EntitySkillsComponent(),
+                                    new EntityEventualSkillsComponent(), selectedSkillUrn).size() == 0;
                         }
                     } else {
                         return false;
@@ -234,7 +246,8 @@ public class EventualSkillsTraining extends BaseInteractionScreen {
                 @Override
                 public void onActivated(UIWidget widget) {
                     if (selectedSkillUrn != null) {
-                        EntityEventualSkillsComponent targetSkills = targetEntity.getComponent(EntityEventualSkillsComponent.class);
+                        EntityEventualSkillsComponent targetSkills =
+                                targetEntity.getComponent(EntityEventualSkillsComponent.class);
                         if (targetSkills != null && targetSkills.currentSkillInTraining != null && selectedSkillUrn.equals(new ResourceUrn(targetSkills.currentSkillInTraining))) {
                             targetEntity.send(new StopTrainingSkillRequestEvent());
                         } else {

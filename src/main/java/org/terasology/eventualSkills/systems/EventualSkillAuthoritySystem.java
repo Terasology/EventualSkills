@@ -1,29 +1,24 @@
-/*
- * Copyright 2015 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.eventualSkills.systems;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.engine.Time;
-import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.entitySystem.event.ReceiveEvent;
-import org.terasology.entitySystem.prefab.Prefab;
-import org.terasology.entitySystem.systems.BaseComponentSystem;
-import org.terasology.entitySystem.systems.RegisterMode;
-import org.terasology.entitySystem.systems.RegisterSystem;
+import org.terasology.engine.core.Time;
+import org.terasology.engine.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.event.ReceiveEvent;
+import org.terasology.engine.entitySystem.prefab.Prefab;
+import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
+import org.terasology.engine.entitySystem.systems.RegisterMode;
+import org.terasology.engine.entitySystem.systems.RegisterSystem;
+import org.terasology.engine.logic.console.commandSystem.annotations.Command;
+import org.terasology.engine.logic.console.commandSystem.annotations.Sender;
+import org.terasology.engine.logic.delay.DelayManager;
+import org.terasology.engine.logic.delay.DelayedActionTriggeredEvent;
+import org.terasology.engine.logic.permission.PermissionManager;
+import org.terasology.engine.network.ClientComponent;
+import org.terasology.engine.registry.In;
+import org.terasology.engine.utilities.Assets;
 import org.terasology.eventualSkills.components.EntityEventualSkillsComponent;
 import org.terasology.eventualSkills.components.EntitySkillsComponent;
 import org.terasology.eventualSkills.components.EventualSkillDescriptionComponent;
@@ -32,14 +27,6 @@ import org.terasology.eventualSkills.events.SkillTrainedEvent;
 import org.terasology.eventualSkills.events.StartTrainingSkillRequestEvent;
 import org.terasology.eventualSkills.events.StopTrainingSkillRequestEvent;
 import org.terasology.gestalt.assets.ResourceUrn;
-import org.terasology.logic.console.commandSystem.annotations.Command;
-import org.terasology.logic.console.commandSystem.annotations.Sender;
-import org.terasology.logic.delay.DelayManager;
-import org.terasology.logic.delay.DelayedActionTriggeredEvent;
-import org.terasology.logic.permission.PermissionManager;
-import org.terasology.network.ClientComponent;
-import org.terasology.registry.In;
-import org.terasology.utilities.Assets;
 
 import java.util.Map;
 import java.util.Optional;
@@ -58,7 +45,8 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
     EventualSkillsManager eventualSkillsManager;
 
     @ReceiveEvent
-    public void rescheduleSkillAfterSkillTrained(SkillTrainedEvent event, EntityRef entityRef, EntityEventualSkillsComponent entityEventualSkillsComponent) {
+    public void rescheduleSkillAfterSkillTrained(SkillTrainedEvent event, EntityRef entityRef,
+                                                 EntityEventualSkillsComponent entityEventualSkillsComponent) {
         if (event.getSkillTrained().toString().equals(entityEventualSkillsComponent.currentSkillInTraining)) {
             stopTraining(entityRef);
             entityEventualSkillsComponent.partiallyLearnedSkills.remove(entityEventualSkillsComponent.currentSkillInTraining);
@@ -88,7 +76,8 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
     public String finishTrainingEventualSkill(
             @Sender EntityRef client) {
         EntityRef playerEntity = client.getComponent(ClientComponent.class).character;
-        EntityEventualSkillsComponent entityEventualSkillsComponent = playerEntity.getComponent(EntityEventualSkillsComponent.class);
+        EntityEventualSkillsComponent entityEventualSkillsComponent =
+                playerEntity.getComponent(EntityEventualSkillsComponent.class);
         String currentSkillInTraining = entityEventualSkillsComponent.currentSkillInTraining;
         if (currentSkillInTraining != null) {
             completeTraining(playerEntity);
@@ -132,17 +121,20 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
             String completedSkill = eventualSkillsComponent.currentSkillInTraining;
             if (completedSkill != null) {
                 if (eventualSkillsComponent.currentSkillInTraining != null) {
-                    entityRef.send(new GiveSkillEvent(eventualSkillsComponent.currentSkillInTraining, eventualSkillsComponent.currentSkillLevelInTraining));
+                    entityRef.send(new GiveSkillEvent(eventualSkillsComponent.currentSkillInTraining,
+                            eventualSkillsComponent.currentSkillLevelInTraining));
                     logger.info(entityRef.toString() + " completed training skill " + completedSkill);
                 }
             }
         }
     }
+
     private void scheduleEntityTrainingCompletion(EntityEventualSkillsComponent skillComponent, EntityRef entityRef) {
         if (delayManager.hasDelayedAction(entityRef, DELAY_MANAGER_ACTION)) {
             delayManager.cancelDelayedAction(entityRef, DELAY_MANAGER_ACTION);
         }
-        long delayAmount = (long) ((skillComponent.currentTrainingTargetSkillPoints - skillComponent.currentTrainingCurrentSkillPoints) / SKILL_POINTS_PER_MILLISECOND);
+        long delayAmount =
+                (long) ((skillComponent.currentTrainingTargetSkillPoints - skillComponent.currentTrainingCurrentSkillPoints) / SKILL_POINTS_PER_MILLISECOND);
         if (delayAmount <= 0) {
             completeTraining(entityRef);
             return;
@@ -150,9 +142,11 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
         delayManager.addDelayedAction(entityRef, DELAY_MANAGER_ACTION, delayAmount);
     }
 
-    private void savePartialTraining(EntitySkillsComponent skillsComponent, EntityEventualSkillsComponent entityEventualSkillsComponent) {
+    private void savePartialTraining(EntitySkillsComponent skillsComponent,
+                                     EntityEventualSkillsComponent entityEventualSkillsComponent) {
         if (entityEventualSkillsComponent.currentSkillInTraining != null) {
-            ResourceUrn currentSkillInTrainingUrn = new ResourceUrn(entityEventualSkillsComponent.currentSkillInTraining);
+            ResourceUrn currentSkillInTrainingUrn =
+                    new ResourceUrn(entityEventualSkillsComponent.currentSkillInTraining);
             // only save the partial skill training if we have not already learned this skill level
             if (entityEventualSkillsComponent.currentSkillLevelInTraining > skillsComponent.getSkillLevel(currentSkillInTrainingUrn)) {
                 calculatePartialTraining(entityEventualSkillsComponent);
@@ -176,14 +170,16 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
         skillComponent.trainingLastTimeComputedSkillPoints = currentTime;
     }
 
-    private void setSkillInTraining(EntitySkillsComponent skillsComponent, EntityEventualSkillsComponent eventualSkillsComponent, ResourceUrn skillUrn) {
+    private void setSkillInTraining(EntitySkillsComponent skillsComponent,
+                                    EntityEventualSkillsComponent eventualSkillsComponent, ResourceUrn skillUrn) {
         String skill = skillUrn.toString().toLowerCase();
         Optional<Prefab> skillPrefab = Assets.getPrefab(skill);
         if (!skillPrefab.isPresent() || !skillPrefab.get().hasComponent(EventualSkillDescriptionComponent.class)) {
             logger.warn("Skill, " + skill + " is not valid");
             return;
         }
-        EventualSkillDescriptionComponent skillDescription = skillPrefab.get().getComponent(EventualSkillDescriptionComponent.class);
+        EventualSkillDescriptionComponent skillDescription =
+                skillPrefab.get().getComponent(EventualSkillDescriptionComponent.class);
 
         // validate that the skill to be trained has all the prerequisiteSkills met
         for (Map.Entry<String, Integer> skillReq : skillDescription.prerequisiteSkills.entrySet()) {
@@ -200,7 +196,8 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
 
         // load any partial training
         if (eventualSkillsComponent.partiallyLearnedSkills.containsKey(skill)) {
-            eventualSkillsComponent.currentTrainingCurrentSkillPoints = eventualSkillsComponent.partiallyLearnedSkills.get(skill);
+            eventualSkillsComponent.currentTrainingCurrentSkillPoints =
+                    eventualSkillsComponent.partiallyLearnedSkills.get(skill);
         } else {
             eventualSkillsComponent.currentTrainingCurrentSkillPoints = 0;
         }
@@ -213,14 +210,16 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
 
         eventualSkillsComponent.currentSkillRankInTraining = skillDescription.rank;
         eventualSkillsComponent.currentTrainingTargetSkillPoints =
-                eventualSkillsManager.skillPointsNeeded(eventualSkillsComponent.currentSkillRankInTraining, eventualSkillsComponent.currentSkillLevelInTraining);
+                eventualSkillsManager.skillPointsNeeded(eventualSkillsComponent.currentSkillRankInTraining,
+                        eventualSkillsComponent.currentSkillLevelInTraining);
         eventualSkillsComponent.currentSkillInTraining = skill;
         eventualSkillsComponent.trainingLastTimeComputedSkillPoints = time.getGameTimeInMs();
     }
 
 
     private EntityEventualSkillsComponent getEntityEventualSkillsComponent(EntityRef entityRef) {
-        EntityEventualSkillsComponent entityEventualSkillsComponent = entityRef.getComponent(EntityEventualSkillsComponent.class);
+        EntityEventualSkillsComponent entityEventualSkillsComponent =
+                entityRef.getComponent(EntityEventualSkillsComponent.class);
         if (entityEventualSkillsComponent == null) {
             entityEventualSkillsComponent = new EntityEventualSkillsComponent();
         }
