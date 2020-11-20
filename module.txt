@@ -4,7 +4,10 @@
     "author": "Josharias",
     "displayName": "Eventual Skills",
     "description": "A library for adding time based skill leveling.",
-    "dependencies": [],
+    "dependencies": [
+        { "id": "CoreAssets", "minVersion": "2.0.0" },
+        { "id": "Notifications", "minVersion": "0.1.0-SNAPSHOT" }
+    ],
     "isLibrary": true,
     "isAugmentation": true
 }
