@@ -17,9 +17,9 @@ import org.terasology.input.InputSystem;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.logic.players.event.LocalPlayerInitializedEvent;
 import org.terasology.network.ClientComponent;
-import org.terasology.notifications.events.AddNotificationEvent;
+import org.terasology.notifications.events.ShowNotificationEvent;
 import org.terasology.notifications.model.Notification;
-import org.terasology.notifications.events.RemoveNotificationEvent;
+import org.terasology.notifications.events.ExpireNotificationEvent;
 import org.terasology.nui.Color;
 import org.terasology.nui.FontColor;
 import org.terasology.registry.In;
@@ -81,7 +81,7 @@ public class EventualSkillsClientSystem extends BaseComponentSystem {
                         "Press " + getActivationKey(new SimpleUri("EventualSkills:eventualSkills")) + " to start " +
                                 "training",
                         "CoreAssets:items#GooeysFist");
-        localPlayer.getClientEntity().send(new AddNotificationEvent(notification));
+        localPlayer.getClientEntity().send(new ShowNotificationEvent(notification));
     }
 
     @ReceiveEvent
@@ -96,7 +96,7 @@ public class EventualSkillsClientSystem extends BaseComponentSystem {
     @ReceiveEvent(components = ClientComponent.class)
     public void onEventualSkillsButton(EventualSkillsButton event, EntityRef entity) {
         if (event.getState() == ButtonState.DOWN) {
-            localPlayer.getClientEntity().send(new RemoveNotificationEvent(NOTIFICATION_ID));
+            localPlayer.getClientEntity().send(new ExpireNotificationEvent(NOTIFICATION_ID));
             nuiManager.toggleScreen("EventualSkills:EventualSkillsTraining");
             EventualSkillsTraining screen =
                     (EventualSkillsTraining) nuiManager.getScreen("EventualSkills:EventualSkillsTraining");
