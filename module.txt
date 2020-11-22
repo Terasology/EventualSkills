@@ -6,7 +6,7 @@
     "description": "A library for adding time based skill leveling.",
     "dependencies": [
         { "id": "CoreAssets", "minVersion": "2.0.0" },
-        { "id": "Notifications", "minVersion": "0.1.0-SNAPSHOT" }
+        { "id": "Notifications", "minVersion": "0.1.0" }
     ],
     "isLibrary": true,
     "isAugmentation": true
