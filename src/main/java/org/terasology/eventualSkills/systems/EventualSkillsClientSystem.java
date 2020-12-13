@@ -50,9 +50,9 @@ public class EventualSkillsClientSystem extends BaseComponentSystem {
      * If the display name of the primary bound key is a single character this representation will be the encircled
      * character. Otherwise the full display name is used. The bound key will be printed in yellow.
      * <p>
-     * If now key binding was found the text "n/a" in red color is returned.
+     * If no key binding was found the text "n/a" in red color is returned.
      *
-     * @param button the Uri of a bindable button
+     * @param button the URI of a bindable button
      * @return a formatted text to be used as representation for the player
      */
     //TODO: put this in a common place? Duplicated in Dialogs and InGameHelp
@@ -70,7 +70,7 @@ public class EventualSkillsClientSystem extends BaseComponentSystem {
                         return key;
                     }
                 })
-                .map(key -> FontColor.getColored(key, new Color(0xFFFF00FF)))
+                .map(key -> FontColor.getColored(key, Color.yellow))
                 .orElse(FontColor.getColored("n/a", Color.red));
     }
 
