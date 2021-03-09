@@ -16,8 +16,8 @@
 package org.terasology.eventualSkills.events;
 
 import org.terasology.assets.ResourceUrn;
-import org.terasology.entitySystem.event.Event;
-import org.terasology.network.ServerEvent;
+import org.terasology.engine.entitySystem.event.Event;
+import org.terasology.engine.network.ServerEvent;
 
 @ServerEvent
 public class StartTrainingSkillRequestEvent implements Event {

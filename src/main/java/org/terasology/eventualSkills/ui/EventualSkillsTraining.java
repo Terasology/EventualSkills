@@ -3,7 +3,9 @@
 package org.terasology.eventualSkills.ui;
 
 import org.terasology.assets.ResourceUrn;
-import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.entity.EntityRef;
+import org.terasology.engine.registry.In;
+import org.terasology.engine.rendering.nui.BaseInteractionScreen;
 import org.terasology.eventualSkills.components.EntityEventualSkillsComponent;
 import org.terasology.eventualSkills.components.EntitySkillsComponent;
 import org.terasology.eventualSkills.components.EventualSkillDescriptionComponent;
@@ -19,8 +21,6 @@ import org.terasology.nui.widgets.ActivateEventListener;
 import org.terasology.nui.widgets.UIButton;
 import org.terasology.nui.widgets.UILabel;
 import org.terasology.nui.widgets.UIList;
-import org.terasology.registry.In;
-import org.terasology.rendering.nui.BaseInteractionScreen;
 
 import java.util.ArrayList;
 import java.util.List;

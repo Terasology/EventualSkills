@@ -15,7 +15,7 @@
  */
 package org.terasology.eventualSkills.components;
 
-import org.terasology.entitySystem.Component;
+import org.terasology.engine.entitySystem.Component;
 
 import java.util.Map;
 import java.util.TreeMap;

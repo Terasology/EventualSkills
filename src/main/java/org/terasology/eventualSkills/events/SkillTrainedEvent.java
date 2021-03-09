@@ -16,7 +16,7 @@
 package org.terasology.eventualSkills.events;
 
 import org.terasology.assets.ResourceUrn;
-import org.terasology.entitySystem.event.Event;
+import org.terasology.engine.entitySystem.event.Event;
 
 /**
  * This event is fired when a skill has completed training

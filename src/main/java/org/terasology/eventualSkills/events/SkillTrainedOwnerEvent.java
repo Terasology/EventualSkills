@@ -16,8 +16,8 @@
 package org.terasology.eventualSkills.events;
 
 import org.terasology.assets.ResourceUrn;
-import org.terasology.entitySystem.event.Event;
-import org.terasology.network.OwnerEvent;
+import org.terasology.engine.entitySystem.event.Event;
+import org.terasology.engine.network.OwnerEvent;
 
 /**
  * This event is fired to the owner when a skill has completed training so that the UI can ping the player
