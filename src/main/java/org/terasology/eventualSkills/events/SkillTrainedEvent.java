@@ -15,7 +15,7 @@
  */
 package org.terasology.eventualSkills.events;
 
-import org.terasology.assets.ResourceUrn;
+import org.terasology.gestalt.assets.ResourceUrn;
 import org.terasology.engine.entitySystem.event.Event;
 
 /**

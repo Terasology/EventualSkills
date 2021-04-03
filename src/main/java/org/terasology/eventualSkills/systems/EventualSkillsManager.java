@@ -15,7 +15,7 @@
  */
 package org.terasology.eventualSkills.systems;
 
-import org.terasology.assets.ResourceUrn;
+import org.terasology.gestalt.assets.ResourceUrn;
 import org.terasology.eventualSkills.components.EntityEventualSkillsComponent;
 import org.terasology.eventualSkills.components.EntitySkillsComponent;
 import org.terasology.eventualSkills.components.EventualSkillDescriptionComponent;
