@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.eventualSkills.ui;
 
-import org.terasology.assets.ResourceUrn;
+import org.terasology.gestalt.assets.ResourceUrn;
 import org.terasology.engine.registry.CoreRegistry;
 import org.terasology.engine.utilities.Assets;
 import org.terasology.eventualSkills.components.EventualSkillDescriptionComponent;
