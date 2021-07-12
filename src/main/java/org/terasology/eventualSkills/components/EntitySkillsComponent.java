@@ -26,4 +26,10 @@ public class EntitySkillsComponent implements Component<EntitySkillsComponent> {
             return 0;
         }
     }
+
+    @Override
+    public void copy(EntitySkillsComponent other) {
+        this.learnedSkills.clear();
+        this.learnedSkills.putAll(other.learnedSkills);
+    }
 }

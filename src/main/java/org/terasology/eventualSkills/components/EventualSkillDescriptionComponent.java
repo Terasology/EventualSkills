@@ -16,4 +16,14 @@ public class EventualSkillDescriptionComponent implements Component<EventualSkil
     public Map<String, Integer> prerequisiteSkills = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
 
+    @Override
+    public void copy(EventualSkillDescriptionComponent other) {
+        this.name = other.name;
+        this.description = other.description;
+        this.shortName = other.shortName;
+        this.rank = other.rank;
+
+        this.prerequisiteSkills.clear();
+        prerequisiteSkills.putAll(other.prerequisiteSkills);
+    }
 }

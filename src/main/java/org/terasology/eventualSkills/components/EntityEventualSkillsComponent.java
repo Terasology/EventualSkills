@@ -25,4 +25,16 @@ public class EntityEventualSkillsComponent implements Component<EntityEventualSk
     // a map of the skill and how many skill points have already been acquired.  These must always be lowercased, otherwise chaos.
     @Replicate
     public Map<String, Integer> partiallyLearnedSkills = Maps.newHashMap();
+
+    @Override
+    public void copy(EntityEventualSkillsComponent other) {
+        this.currentSkillInTraining = other.currentSkillInTraining;
+        this.currentSkillLevelInTraining = other.currentSkillLevelInTraining;
+        this.currentSkillRankInTraining = other.currentSkillRankInTraining;
+        this.currentTrainingTargetSkillPoints = other.currentTrainingTargetSkillPoints;
+        this.currentTrainingCurrentSkillPoints = other.currentTrainingCurrentSkillPoints;
+        this.trainingLastTimeComputedSkillPoints = other.trainingLastTimeComputedSkillPoints;
+        this.partiallyLearnedSkills.clear();
+        this.partiallyLearnedSkills.putAll(other.partiallyLearnedSkills);
+    }
 }

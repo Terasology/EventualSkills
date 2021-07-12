@@ -7,4 +7,10 @@ import org.terasology.gestalt.entitysystem.component.Component;
 public class SkillGivingItemComponent implements Component<SkillGivingItemComponent> {
     public String skill;
     public Integer level;
+
+    @Override
+    public void copy(SkillGivingItemComponent other) {
+        this.skill = other.skill;
+        this.level = other.level;
+    }
 }
