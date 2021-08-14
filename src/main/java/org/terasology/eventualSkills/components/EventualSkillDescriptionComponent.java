@@ -17,7 +17,7 @@ public class EventualSkillDescriptionComponent implements Component<EventualSkil
 
 
     @Override
-    public void copy(EventualSkillDescriptionComponent other) {
+    public void copyFrom(EventualSkillDescriptionComponent other) {
         this.name = other.name;
         this.description = other.description;
         this.shortName = other.shortName;

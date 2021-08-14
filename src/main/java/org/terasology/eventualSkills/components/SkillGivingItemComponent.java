@@ -9,7 +9,7 @@ public class SkillGivingItemComponent implements Component<SkillGivingItemCompon
     public Integer level;
 
     @Override
-    public void copy(SkillGivingItemComponent other) {
+    public void copyFrom(SkillGivingItemComponent other) {
         this.skill = other.skill;
         this.level = other.level;
     }

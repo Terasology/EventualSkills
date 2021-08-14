@@ -27,7 +27,7 @@ public class EntityEventualSkillsComponent implements Component<EntityEventualSk
     public Map<String, Integer> partiallyLearnedSkills = Maps.newHashMap();
 
     @Override
-    public void copy(EntityEventualSkillsComponent other) {
+    public void copyFrom(EntityEventualSkillsComponent other) {
         this.currentSkillInTraining = other.currentSkillInTraining;
         this.currentSkillLevelInTraining = other.currentSkillLevelInTraining;
         this.currentSkillRankInTraining = other.currentSkillRankInTraining;
