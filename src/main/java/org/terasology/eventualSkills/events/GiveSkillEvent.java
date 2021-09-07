@@ -16,7 +16,7 @@
 package org.terasology.eventualSkills.events;
 
 import org.terasology.gestalt.assets.ResourceUrn;
-import org.terasology.engine.entitySystem.event.Event;
+import org.terasology.gestalt.entitysystem.event.Event;
 
 public class GiveSkillEvent implements Event {
     ResourceUrn skill;
