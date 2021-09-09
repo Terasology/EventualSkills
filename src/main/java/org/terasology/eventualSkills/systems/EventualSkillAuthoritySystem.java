@@ -17,7 +17,6 @@ package org.terasology.eventualSkills.systems;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.gestalt.assets.ResourceUrn;
 import org.terasology.engine.core.Time;
 import org.terasology.engine.entitySystem.entity.EntityRef;
 import org.terasology.engine.entitySystem.event.ReceiveEvent;
@@ -40,6 +39,7 @@ import org.terasology.eventualSkills.events.GiveSkillEvent;
 import org.terasology.eventualSkills.events.SkillTrainedEvent;
 import org.terasology.eventualSkills.events.StartTrainingSkillRequestEvent;
 import org.terasology.eventualSkills.events.StopTrainingSkillRequestEvent;
+import org.terasology.gestalt.assets.ResourceUrn;
 
 import java.util.Map;
 import java.util.Optional;
