@@ -4,7 +4,6 @@ package org.terasology.eventualSkills.systems;
 
 import org.terasology.engine.core.SimpleUri;
 import org.terasology.engine.entitySystem.entity.EntityRef;
-import org.terasology.engine.entitySystem.event.ReceiveEvent;
 import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
 import org.terasology.engine.entitySystem.systems.RegisterMode;
 import org.terasology.engine.entitySystem.systems.RegisterSystem;
@@ -18,6 +17,7 @@ import org.terasology.engine.unicode.EnclosedAlphanumerics;
 import org.terasology.eventualSkills.EventualSkillsButton;
 import org.terasology.eventualSkills.components.EntitySkillsComponent;
 import org.terasology.eventualSkills.ui.EventualSkillsTraining;
+import org.terasology.gestalt.entitysystem.event.ReceiveEvent;
 import org.terasology.input.ButtonState;
 import org.terasology.input.Input;
 import org.terasology.notifications.events.ExpireNotificationEvent;
