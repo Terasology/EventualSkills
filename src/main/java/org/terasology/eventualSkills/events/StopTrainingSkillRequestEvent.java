@@ -15,8 +15,8 @@
  */
 package org.terasology.eventualSkills.events;
 
-import org.terasology.engine.entitySystem.event.Event;
 import org.terasology.engine.network.ServerEvent;
+import org.terasology.gestalt.entitysystem.event.Event;
 
 @ServerEvent
 public class StopTrainingSkillRequestEvent implements Event {
