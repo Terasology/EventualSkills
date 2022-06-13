@@ -31,6 +31,8 @@ import org.terasology.gestalt.assets.ResourceUrn;
 import org.terasology.gestalt.entitysystem.event.ReceiveEvent;
 import org.terasology.notifications.events.ShowNotificationEvent;
 import org.terasology.notifications.model.Notification;
+import org.terasology.engine.logic.players.LocalPlayer;
+import org.terasology.engine.logic.players.event.LocalPlayerInitializedEvent;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class SkillsAuthoritySystem extends BaseComponentSystem {
@@ -39,6 +41,9 @@ public class SkillsAuthoritySystem extends BaseComponentSystem {
     private static final long NOTIFICATION_DURATION = 10000;
 
     private static final Logger logger = LoggerFactory.getLogger(SkillsAuthoritySystem.class);
+
+    @In
+    LocalPlayer localPlayer;
 
     private void showNewSkillNotification(String newSkillName) {
         Notification notification =
