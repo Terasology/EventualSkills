@@ -29,6 +29,8 @@ import org.terasology.eventualSkills.events.SkillTrainedEvent;
 import org.terasology.eventualSkills.events.SkillTrainedOwnerEvent;
 import org.terasology.gestalt.assets.ResourceUrn;
 import org.terasology.gestalt.entitysystem.event.ReceiveEvent;
+import org.terasology.notifications.events.ShowNotificationEvent;
+import org.terasology.notifications.model.Notification;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class SkillsAuthoritySystem extends BaseComponentSystem {
