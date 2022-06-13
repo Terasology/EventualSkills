@@ -42,6 +42,12 @@ public class SkillsAuthoritySystem extends BaseComponentSystem {
             skillComponent.learnedSkills.put(skill, event.getLevel());
             entityRef.addOrSaveComponent(skillComponent);
             entityRef.send(new SkillTrainedEvent(event.getSkill(), event.getLevel()));
+
+            //TODO: add notification that new skill was aqquired
+
+
+
+
             logger.info(entityRef.toString() + " given skill " + skill + " level " + event.getLevel());
         }
     }
