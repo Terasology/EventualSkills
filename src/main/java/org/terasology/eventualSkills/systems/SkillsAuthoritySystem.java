@@ -32,7 +32,20 @@ import org.terasology.gestalt.entitysystem.event.ReceiveEvent;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class SkillsAuthoritySystem extends BaseComponentSystem {
+
+    private static final String NOTIFICATION_ID = "EventualSkills:newSkill";
+    private static final long NOTIFICATION_DURATION = 10000;
+
     private static final Logger logger = LoggerFactory.getLogger(SkillsAuthoritySystem.class);
+
+    private void showNewSkillNotification(String newSkillName) {
+        Notification notification =
+                new Notification(NOTIFICATION_ID,
+                        "New Skill Acquired",
+                        "Acquired Skill " + newSkillName,
+                        "CoreAssets:items#GooeysFist");
+        localPlayer.getClientEntity().send(new ShowNotificationEvent(notification), NOTIFICATION_DURATION);
+    }
 
     @ReceiveEvent
     public void giveSkillToEntity(GiveSkillEvent event, EntityRef entityRef) {
@@ -42,12 +55,7 @@ public class SkillsAuthoritySystem extends BaseComponentSystem {
             skillComponent.learnedSkills.put(skill, event.getLevel());
             entityRef.addOrSaveComponent(skillComponent);
             entityRef.send(new SkillTrainedEvent(event.getSkill(), event.getLevel()));
-
-            //TODO: add notification that new skill was aqquired
-
-
-
-
+            showNewSkillNotification(skill);
             logger.info(entityRef.toString() + " given skill " + skill + " level " + event.getLevel());
         }
     }
