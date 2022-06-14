@@ -29,10 +29,30 @@ import org.terasology.eventualSkills.events.SkillTrainedEvent;
 import org.terasology.eventualSkills.events.SkillTrainedOwnerEvent;
 import org.terasology.gestalt.assets.ResourceUrn;
 import org.terasology.gestalt.entitysystem.event.ReceiveEvent;
+import org.terasology.notifications.events.ShowNotificationEvent;
+import org.terasology.notifications.model.Notification;
+import org.terasology.engine.logic.players.LocalPlayer;
+import org.terasology.engine.registry.In;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class SkillsAuthoritySystem extends BaseComponentSystem {
+
+    private static final String NOTIFICATION_ID = "EventualSkills:newSkill";
+    private static final long NOTIFICATION_DURATION = 10000;
+
     private static final Logger logger = LoggerFactory.getLogger(SkillsAuthoritySystem.class);
+
+    @In
+    LocalPlayer localPlayer;
+
+    private void showNewSkillNotification(String newSkillName) {
+        Notification notification =
+                new Notification(NOTIFICATION_ID,
+                        "Today I Learned",
+                        newSkillName,
+                        "CoreAssets:items#GooeysFist");
+        localPlayer.getClientEntity().send(new ShowNotificationEvent(notification, NOTIFICATION_DURATION));
+    }
 
     @ReceiveEvent
     public void giveSkillToEntity(GiveSkillEvent event, EntityRef entityRef) {
@@ -42,6 +62,7 @@ public class SkillsAuthoritySystem extends BaseComponentSystem {
             skillComponent.learnedSkills.put(skill, event.getLevel());
             entityRef.addOrSaveComponent(skillComponent);
             entityRef.send(new SkillTrainedEvent(event.getSkill(), event.getLevel()));
+            showNewSkillNotification(skill);
             logger.info(entityRef.toString() + " given skill " + skill + " level " + event.getLevel());
         }
     }
