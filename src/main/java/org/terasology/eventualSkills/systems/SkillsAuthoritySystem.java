@@ -32,7 +32,6 @@ import org.terasology.gestalt.entitysystem.event.ReceiveEvent;
 import org.terasology.notifications.events.ShowNotificationEvent;
 import org.terasology.notifications.model.Notification;
 import org.terasology.engine.logic.players.LocalPlayer;
-import org.terasology.engine.logic.players.event.LocalPlayerInitializedEvent;
 import org.terasology.engine.registry.In;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
@@ -49,8 +48,8 @@ public class SkillsAuthoritySystem extends BaseComponentSystem {
     private void showNewSkillNotification(String newSkillName) {
         Notification notification =
                 new Notification(NOTIFICATION_ID,
-                        "New Skill Acquired",
-                        "Acquired Skill " + newSkillName,
+                        "Today I Learned",
+                        newSkillName,
                         "CoreAssets:items#GooeysFist");
         localPlayer.getClientEntity().send(new ShowNotificationEvent(notification, NOTIFICATION_DURATION));
     }
