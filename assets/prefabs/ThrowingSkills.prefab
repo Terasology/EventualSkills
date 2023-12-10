@@ -1,0 +1,10 @@
+{
+  "EventualSkillDescription": {
+    "name": "ThrowingSkills",
+    "shortName": "TS",
+    "description": "Increase the speed and the range of the projectile. Can be useful if you want to show your anger",
+    "prerequisiteSkills": {
+      "ManualLaborEventualSkills:CraftingSkill": 3
+    }
+  }
+}

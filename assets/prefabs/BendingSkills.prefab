@@ -1,0 +1,10 @@
+{
+  "EventualSkillDescription": {
+    "name": "BendingSkills",
+    "shortName": "ASBL",
+    "description": "Don't know if it really is useful. But well. Good enough",
+    "prerequisiteSkills": {
+      "ManualLaborEventualSkills:CraftingSkill": 3
+    }
+  }
+}
