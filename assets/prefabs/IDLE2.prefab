@@ -1,0 +1,10 @@
+{
+  "EventualSkillDescription": {
+    "name": "IDLE2",
+    "shortName": "ASBL",
+    "description": "To be the incarnation of sloth",
+    "prerequisiteSkills": {
+      "ManualLaborEventualSkills:CraftingSkill": 3
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "EventualSkillDescription": {
+    "name": "Skill6",
+    "shortName": "RS",
+    "description": "For the intellectuals",
+    "prerequisiteSkills": {
+      "ManualLaborEventualSkills:CraftingSkill": 3
+    }
+  }
+}

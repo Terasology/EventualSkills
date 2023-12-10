@@ -1,0 +1,8 @@
+{
+  "EventualSkillDescription": {
+    "name": "Dunno",
+    "shortName": "IDLE",
+    "description": "Increases laziness by 20% per level.",
+    "prerequisiteSkills": []
+  }
+}
