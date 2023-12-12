@@ -6,10 +6,13 @@
     "contents": [
       {
         "type": "RelativeLayout",
+
         "contents": [
           {
             "type": "UIBox",
             "layoutInfo": {
+            "width": 550,
+             "height": 500,
               "position-top": {
                 "target": "TOP",
                 "widget": "mainContent",
@@ -36,64 +39,88 @@
             "type": "MigLayout",
             "id": "mainContent",
             "layoutInfo": {
-              "use-content-width": true,
-              "use-content-height": true,
-              "position-vertical-center": {
-              },
-              "position-horizontal-center": {
-              }
+            "height" : 480,
+            "width" : 530,
+              "use-content-width": false,
+              "use-content-height": false,
+              "position-vertical-center": {},
+              "position-horizontal-center": {}
             },
             "layoutConstraints": "wrap 2, align left",
-            "colConstraints": "10[min][200:200:200]",
-            "rowConstraints": "[min][min][min][100][100]",
             "contents": [
               {
-                "type": "UIList",
-                "id": "skillList",
-                "family": "skill-list",
+                "type": "ScrollableArea",
+                "id": "scrollArea",
+                "verticalScrollbar": true,
+                "content": {
+                  "type": "UIList",
+                  "readOnly": true,
+                  "multiline": true,
+                  "id": "skillList",
+                  "family": "skill-list"
+                },
+                "layoutInfo": {}
+              },
+              {
+                "type": "MigLayout",
+                "rowConstraints": "[10::20]10[10::20]10[10::20]10[10::20]10[10::20]10[10::20]10[10::20]10[10::100]10[10::20]",
                 "layoutInfo": {
-                  "cc": "dock west, width 200px, height 200px"
-                }
-              },
-              {
-                "type": "UILabel",
-                "text": "Skill"
-              },
-              {
-                "type": "UILabel",
-                "id": "selectedSkillName"
-              },
-              {
-                "type": "UILabel",
-                "text": "Progress"
-              },
-              {
-                "type": "UILabel",
-                "id": "selectedSkillProgress"
-              },
-              {
-                "type": "UILabel",
-                "text": ""
-              },
-              {
-                "type": "UIButton",
-                "id": "selectedSkillAction"
-              },
-              {
-                "type": "UILabel",
-                "text": "Description"
-              },
-              {
-                "type": "UILabel",
-                "id": "selectedSkillDescription"
-              },
-              {
-                "type": "UILabel",
-                "text": "Required Skills"
-              },
-              {
-                "type": "UILabel",
-                "id": "selectedSkillPrerequisiteSkills"
+                  "use-content-width": false,
+                  "use-content-height": false,
+                  "position-vertical-center": {},
+                  "position-horizontal-center": {}
+                },
+
+                "layoutConstraints": "wrap 1, align left",
+                "contents": [
+                  {
+                    "type": "UILabel",
+                    "text": "Skill",
+                    "layoutInfo": {}
+                  },
+                  {
+                    "type": "UILabel",
+                    "id": "selectedSkillName",
+                    "layoutInfo": {}
+                  },
+                  {
+                    "type": "UILabel",
+                    "text": "Progress",
+                    "layoutInfo": {}
+                  },
+                  {
+                    "type": "UILabel",
+                    "id": "selectedSkillProgress",
+                    "layoutInfo": {}
+                  },
+                  {
+                    "type": "UILabel",
+                    "text": "",
+                    "layoutInfo": {}
+                  },
+                  {
+                    "type": "UIButton",
+                    "id": "selectedSkillAction",
+                    "layoutInfo": {}
+                  },
+                  {
+                    "type": "UILabel",
+                    "text": "Description"
+                  },
+                  {
+                    "type": "UILabel",
+                    "id": "selectedSkillDescription"
+                  },
+                  {
+                    "type": "UILabel",
+                    "text": "Required Skills",
+                    "layoutInfo": {}
+                  },
+                  {
+                    "type": "UILabel",
+                    "id": "selectedSkillPrerequisiteSkills"
+                  }
+                ]
               }
             ]
           }
