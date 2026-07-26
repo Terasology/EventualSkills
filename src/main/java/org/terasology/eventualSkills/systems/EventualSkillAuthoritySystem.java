@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.engine.core.Time;
 import org.terasology.engine.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.entity.lifecycleEvents.OnActivatedComponent;
 import org.terasology.engine.entitySystem.prefab.Prefab;
 import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
 import org.terasology.engine.entitySystem.systems.RegisterMode;
@@ -81,6 +82,19 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
     @ReceiveEvent
     public void onRequestStopTraining(StopTrainingSkillRequestEvent event, EntityRef entity) {
         stopTraining(entity);
+    }
+
+    @ReceiveEvent
+    public void onEntityEventualSkillsComponentActivated(OnActivatedComponent event, EntityRef entityRef,
+            EntityEventualSkillsComponent eventualSkillsComponent) {
+        // DelayManager's scheduled actions do not survive a save/load, so the one-shot completion
+        // timer armed by scheduleEntityTrainingCompletion() is lost whenever the entity is reloaded
+        // mid-training. Recompute accrued points up to now and re-arm (or complete immediately if
+        // enough time/points have already passed), otherwise training silently stalls forever.
+        if (eventualSkillsComponent.currentSkillInTraining != null) {
+            calculatePartialTraining(eventualSkillsComponent);
+            scheduleEntityTrainingCompletion(eventualSkillsComponent, entityRef);
+        }
     }
 
     @Command(shortDescription = "Finish training the skill currently being trained", runOnServer = true,
