@@ -87,13 +87,22 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
     @ReceiveEvent
     public void onEntityEventualSkillsComponentActivated(OnActivatedComponent event, EntityRef entityRef,
             EntityEventualSkillsComponent eventualSkillsComponent) {
-        // DelayManager's scheduled actions do not survive a save/load, so the one-shot completion
-        // timer armed by scheduleEntityTrainingCompletion() is lost whenever the entity is reloaded
-        // mid-training. Recompute accrued points up to now and re-arm (or complete immediately if
-        // enough time/points have already passed), otherwise training silently stalls forever.
+        // The persisted DelayedActionComponent's wake-up time is an absolute game-time value that
+        // stays valid across a save/load (game time is restored from the manifest before entities
+        // load), and it re-arms itself via DelayedActionSystem's own OnActivatedComponent handler.
+        // Calling scheduleEntityTrainingCompletion() here unconditionally would cancel and re-add
+        // that action while we're still inside this entity's load-time activation dispatch, which
+        // can drop the re-seed and leave training stalled with no timer armed. So only intervene
+        // when the target was already reached while the game was closed (complete immediately);
+        // otherwise leave the existing scheduled action alone.
         if (eventualSkillsComponent.currentSkillInTraining != null) {
             calculatePartialTraining(eventualSkillsComponent);
-            scheduleEntityTrainingCompletion(eventualSkillsComponent, entityRef);
+            if (eventualSkillsComponent.currentTrainingCurrentSkillPoints >= eventualSkillsComponent.currentTrainingTargetSkillPoints) {
+                if (delayManager.hasDelayedAction(entityRef, DELAY_MANAGER_ACTION)) {
+                    delayManager.cancelDelayedAction(entityRef, DELAY_MANAGER_ACTION);
+                }
+                completeTraining(entityRef);
+            }
         }
     }
 
