@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.engine.core.Time;
 import org.terasology.engine.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.entity.lifecycleEvents.OnActivatedComponent;
 import org.terasology.engine.entitySystem.prefab.Prefab;
 import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
 import org.terasology.engine.entitySystem.systems.RegisterMode;
@@ -81,6 +82,28 @@ public class EventualSkillAuthoritySystem extends BaseComponentSystem {
     @ReceiveEvent
     public void onRequestStopTraining(StopTrainingSkillRequestEvent event, EntityRef entity) {
         stopTraining(entity);
+    }
+
+    @ReceiveEvent
+    public void onEntityEventualSkillsComponentActivated(OnActivatedComponent event, EntityRef entityRef,
+            EntityEventualSkillsComponent eventualSkillsComponent) {
+        // The persisted DelayedActionComponent's wake-up time is an absolute game-time value that
+        // stays valid across a save/load (game time is restored from the manifest before entities
+        // load), and it re-arms itself via DelayedActionSystem's own OnActivatedComponent handler.
+        // Calling scheduleEntityTrainingCompletion() here unconditionally would cancel and re-add
+        // that action while we're still inside this entity's load-time activation dispatch, which
+        // can drop the re-seed and leave training stalled with no timer armed. So only intervene
+        // when the target was already reached while the game was closed (complete immediately);
+        // otherwise leave the existing scheduled action alone.
+        if (eventualSkillsComponent.currentSkillInTraining != null) {
+            calculatePartialTraining(eventualSkillsComponent);
+            if (eventualSkillsComponent.currentTrainingCurrentSkillPoints >= eventualSkillsComponent.currentTrainingTargetSkillPoints) {
+                if (delayManager.hasDelayedAction(entityRef, DELAY_MANAGER_ACTION)) {
+                    delayManager.cancelDelayedAction(entityRef, DELAY_MANAGER_ACTION);
+                }
+                completeTraining(entityRef);
+            }
+        }
     }
 
     @Command(shortDescription = "Finish training the skill currently being trained", runOnServer = true,
